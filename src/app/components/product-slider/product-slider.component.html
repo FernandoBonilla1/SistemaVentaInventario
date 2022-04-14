@@ -1,0 +1,17 @@
+<div style="padding-left: 1%; padding-right: 1%; margin-top: 20px;">
+    <swiper [config]="config"
+            class="swiper-container">
+        <ng-template swiperSlide *ngFor="let slide of slides">
+                <div class="flex-center">
+                    <mat-card class="product-card">
+                        <div class="top-half-card">
+                            {{ slide.producto }}
+                        </div>
+                        <div class="bottom-half-card">
+                            {{ slide.precio }}
+                        </div>
+                    </mat-card>
+                </div>
+        </ng-template>
+    </swiper>
+</div>

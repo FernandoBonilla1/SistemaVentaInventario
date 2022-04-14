@@ -1,0 +1,28 @@
+.product-card-grid {
+    display: grid;
+    grid-template-columns: [first] auto [last];
+    grid-template-rows: [first] 50% [mid] 50% [last];
+}
+
+.top-half-card {
+    grid-column-start: first;
+    grid-column-end: last;
+    grid-row-start: first;
+    grid-row-end: mid;
+}
+
+.bottom-half-card {
+    grid-column-start: first;
+    grid-column-end: last;
+    grid-row-start: mid;
+    grid-row-end: last;
+}
+
+.product-card {
+    max-width: 334px; 
+    max-height: 376px;
+    min-width: 334px; 
+    min-height: 376px; 
+    border-radius: 10px !important;
+    padding: 0 !important;
+}

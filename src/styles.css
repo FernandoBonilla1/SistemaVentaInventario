@@ -1,0 +1,40 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Lato, "Helvetica Neue", sans-serif; }
+
+
+.swiper-container {
+    min-width: 300px;
+    max-width: 1200px !important;
+    width: 100% !important;
+    padding-top: 10px;
+    padding-bottom: 50px;
+    z-index: 0;
+}
+
+.flex-center {
+    justify-content: center; 
+    display: flex !important;
+}
+
+.swiper-wrapper {
+    width: 0;
+}
+
+.swiper-wrapper .spacer-bot {
+    margin-bottom: 100px;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #ff800038 !important;
+}
+
+.swiper-pagination-bullet {
+    background-color: white;
+    border: 3px solid #FF8000;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    bottom: 0px;
+}
