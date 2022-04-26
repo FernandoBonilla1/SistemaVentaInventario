@@ -1,12 +1,19 @@
-const cli = require('nodemon/lib/cli');
-const { Client } = require('pg');
-
-const connectionData = {
-    user: '',
-    host: '',
-    database: '',
-    password: '',
-    port: 5432,
+const conf = require('../config.json');
+const Pool = require('pg').Pool
+const connection = new Pool({
+  user: conf.user,
+  host: conf.host,
+  database: conf.db,
+  password: conf.password,
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false
   }
-  const client = new Client(connectionData)
-  module.exports = client;
+})
+connection
+  .connect()
+  .then(() => console.log('connected'))
+  .catch(err => console.error('connection error', err.stack))
+
+module.exports = connection;
+
