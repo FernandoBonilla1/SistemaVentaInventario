@@ -1,8 +1,0 @@
-{
-    "DbUri": "postgres://fzewwbjbvpagaj:68d1a048003be2a32c87564442d231273ecff11bd4997ea77550865d66d5fdf1@ec2-44-194-92-192.compute-1.amazonaws.com:5432/d9mjm093q92o7f",
-    "db": "d9mjm093q92o7f",
-    "user": "fzewwbjbvpagaj",
-    "password": "68d1a048003be2a32c87564442d231273ecff11bd4997ea77550865d66d5fdf1",
-    "host": "ec2-44-194-92-192.compute-1.amazonaws.com",
-    "RouteServer": "SistemaVentaInventario"
-}
