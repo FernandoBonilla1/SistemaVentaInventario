@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
+const {authenticateToken} = require("../middleware/authorization")
 
 //Rutas designadas a los usuarios
 const {getUsers, createUsers, getUserById, deleteUser, updateUser} = require('../controllers/user.controllers');

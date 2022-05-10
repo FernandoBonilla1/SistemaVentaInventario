@@ -1,40 +1,37 @@
 
-const connection = require('../middleware/postgresconnection');
-const crypto = require('crypto');
-const { response } = require('express');
+const connection = require('../config/db');
+const bcrypt = require('bcrypt');
 
-const algorithm = "aes-256-cbc"; 
-const initVector = crypto.randomBytes(16);
-const Securitykey = crypto.randomBytes(32);
-const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
 
 const getUsers = async (req, res) =>{
-    connection.query('SELECT * FROM usuario',(error, results) =>{
-        if(error){
-            throw error;
-        }
-        res.status(200).json(results.rows);
-    });
+    try{
+        const users = await connection.query('SELECT * FROM usuario');
+        res.json({users: users.rows});
+    } catch (error){
+        res.status(500).json({
+            msg: "No se puedieron acceder a la lista de usuarios",
+            error
+        })
+    }
     
 }
 
 const createUsers = async (req, res) =>{
-    
-    const { rut, name, surname, password, address, phone, city } = req.body;
-    const banned = false;
-    console.log(rut,name,surname,password,address,phone,city);
-    
-    let encryptedData = cipher.update(password, "utf-8", "hex");
-    encryptedData += cipher.final("hex");
-
-    connection.query(`INSERT INTO usuario(rut,nombre,apellido,clave,direccion,telefono,eliminado,ciudad) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, [rut,name,surname,encryptedData,address,phone,banned,city], (error, results) =>{
-        if (error){
-            throw error
-        }
-        res.status(201).json({
-            mesagge: "El usuario fue creado"
+    try {
+        const { rut, name, surname, password, address, phone, city } = req.body;
+        const banned = false;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await connection.query(`INSERT INTO usuario(rut,nombre,apellido,clave,direccion,telefono,eliminado,ciudad) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,
+         [rut,name,surname,hashedPassword,address,phone,banned,city]);
+        res.json({
+            msg: `Se logro ingresar el usuario con rut: ${rut}`
         });
-    });
+    } catch (error){
+        res.status(500).json({
+            msg: "No se pudo ingresar el usuario",
+            error
+        })
+    }
 }
 
 const getUserById = async (req, res) =>{

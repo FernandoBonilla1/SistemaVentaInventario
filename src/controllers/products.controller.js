@@ -1,4 +1,4 @@
-const connection = require('../middleware/postgresconnection');
+const connection = require('../config/db');
 
 const getProducts = async (req, res) =>{
     const product = "";
