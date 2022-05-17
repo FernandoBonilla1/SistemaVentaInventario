@@ -23,6 +23,9 @@ app.use('/api/',Router);
 app.use(authCtrl);
 
 
+let port = 3000;
+if (process.env.PORT) port = process.env.PORT;
+app.listen(port, ()=>{  
+    console.log(`El servidor esta escuchando en el puerto ${port}`);
+});
 
-app.listen(3000);
-console.log('Server on port 3000');
