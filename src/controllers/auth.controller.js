@@ -3,6 +3,14 @@ const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 var jwthelpers = require("../helpers/jwt.helpers");
 
+const logout = async (req, res) =>{
+    res.clearCookie('refresh_token');
+    res.status(200).json({
+        msg: "Se cerro la sesión."
+    })
+
+}
+
 const register = async (req, res) =>{
     try {
         const { rut, name, surname, password, email, address, phone, city } = req.body;
@@ -50,7 +58,10 @@ const login = async (req, res) =>{
         
         let tokens = jwthelpers.jwtTokens(users.rows[0]);
         res.cookie('refresh_token',tokens.refreshToken,{httpOnly:true});
-        res.json(tokens);
+        res.status(200).json({
+            tokens,
+            msg: "Sesion iniciada correctamente."
+        });
         
     } catch (error) {
         res.status(401).json({error: error.message});
