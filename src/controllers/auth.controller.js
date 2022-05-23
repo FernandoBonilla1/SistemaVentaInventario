@@ -56,16 +56,15 @@ const login = async (req, res) =>{
                 msg: "El usuario esta expulsado de la plataforma"
             })
         }
-        return res.status(200).json({msg: "Ingreso exitoso"})
+        //return res.status(200).json({msg: "Ingreso exitoso"})
         //JWT
-        /*
+        
         let tokens = jwthelpers.jwtTokens(users.rows[0]);
         res.cookie('refresh_token',tokens.refreshToken,{httpOnly:true});
         res.status(200).json({
             tokens,
             msg: "Sesion iniciada correctamente."
         });
-        */
         
     } catch (error) {
         res.status(401).json({error: error.message});
