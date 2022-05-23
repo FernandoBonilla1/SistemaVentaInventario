@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 var jwthelpers = require("../helpers/jwt.helpers");
 
+
+
 const logout = async (req, res) =>{
     res.clearCookie('refresh_token');
     res.status(200).json({
@@ -42,6 +44,7 @@ const login = async (req, res) =>{
         }
         //Verificar password
         const validPassword = await bcrypt.compare(password, users.rows[0].password);
+        
         if(!validPassword){
             return res.status(401).json({
                 msg: "Contraseña incorrecta"
@@ -53,15 +56,16 @@ const login = async (req, res) =>{
                 msg: "El usuario esta expulsado de la plataforma"
             })
         }
-        //return res.status(200).json({msg: "Ingreso exitoso"})
+        return res.status(200).json({msg: "Ingreso exitoso"})
         //JWT
-        
+        /*
         let tokens = jwthelpers.jwtTokens(users.rows[0]);
         res.cookie('refresh_token',tokens.refreshToken,{httpOnly:true});
         res.status(200).json({
             tokens,
             msg: "Sesion iniciada correctamente."
         });
+        */
         
     } catch (error) {
         res.status(401).json({error: error.message});
@@ -71,5 +75,6 @@ const login = async (req, res) =>{
 
 module.exports = {
     register,
-    login
+    login,
+    logout
 }

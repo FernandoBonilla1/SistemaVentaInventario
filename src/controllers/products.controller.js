@@ -1,6 +1,30 @@
 const { INTEGER } = require('sequelize');
 const connection = require('../config/db');
 
+const getCategory = async (req, res) =>{
+    try{
+        const category = await connection.query('SELECT * FROM category');
+        res.status(200).json({categorys: category.rows});
+    } catch (error){
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla category",
+            error
+        })
+    }
+}
+
+const getSubCategory = async (req, res) =>{
+    try{
+        const subcategory = await connection.query('SELECT * FROM subcategory');
+        res.status(200).json({subcategorys: subcategory.rows});
+    } catch (error){
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla subcategory",
+            error
+        })
+    }
+}
+
 const getProducts = async (req, res) =>{
     try{
         const products = await connection.query('SELECT * FROM product');
@@ -12,6 +36,18 @@ const getProducts = async (req, res) =>{
         })
     }
     
+}
+
+const getProductwithcategorys = async (req, res) =>{
+    try{
+        const products = await connection.query('SELECT * FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)')
+        res.status(200).json({products: products.rows});
+    } catch (error){
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla producto",
+            error
+        })
+    }
 }
 
 const searchProduct = async (req, res) =>{ 
@@ -64,6 +100,39 @@ const changeStock = async (req, res) =>{
     }
 }
 
+const modifyProduct = async (req, res) =>{ 
+    try{
+        const {id,year,mark,description,amount,value,name,stockmin} = req.body;
+        const product = await connection.query('UPDATE product SET year = $1, mark = $2, description = $3, amount = $4, value = $5, name = $6, stockmin = $7 WHERE id = $8',[year,mark,description,amount,value,name,stockmin,id])
+        res.status(200).json({
+            msg: `Se ha actualizo el producto`
+        });
+        //console.log(id);
+    } catch (error){
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla producto",
+            error
+        })
+    }
+}
+
+const deleteProduct = async (req, res) =>{
+    try{
+        const {id} = req.body;
+        const users = await connection.query('DELETE FROM product WHERE id = $1', [id]);
+        res.status(200).json({
+            msg: `Se elimino el producto con id: ${id}`
+        })
+    } catch (error){
+        res.status(401).json({
+            msg: "No se pudo acceder a la tabla producto",
+            error
+        });
+    }
+};
+
+
+
 const changeStatus = async (req, res) =>{ 
     try{
         const {id,removed} = req.body;
@@ -81,10 +150,17 @@ const changeStatus = async (req, res) =>{
 }
 
 
+
+
 module.exports= {
     getProducts,
     searchProduct,
     createProduct,
     changeStock,
-    changeStatus
+    changeStatus,
+    modifyProduct,
+    deleteProduct,
+    getCategory,
+    getSubCategory,
+    getProductwithcategorys
 }
