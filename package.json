@@ -2,13 +2,14 @@
   "name": "sistema-inventario",
   "version": "1.0.0",
   "engines": {
-		"node": "16.13.0"
-	},
+    "node": "16.13.0"
+  },
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +30,8 @@
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "postgres-schema-builder": "^1.3.0",
-    "sequelize": "^6.19.0"
+    "sequelize": "^6.19.0",
+    "serve": "^13.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
