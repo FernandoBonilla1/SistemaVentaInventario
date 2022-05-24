@@ -2,8 +2,6 @@
 const connection = require('../config/db');
 const bcrypt = require('bcrypt');
 
-
-
 const getUsers = async (req, res) =>{
     try{
         const users = await connection.query('SELECT * FROM users');
