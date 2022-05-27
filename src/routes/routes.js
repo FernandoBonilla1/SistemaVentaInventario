@@ -14,7 +14,7 @@ router.delete('/deleteuser', deleteUser);
 
 //Rutas designadas a los productos
 
-const {getProducts, searchProduct, createProduct, changeStock, changeStatus, modifyProduct, deleteProduct, getCategory, getSubCategory, getProductwithcategorys} = require('../controllers/products.controller');
+const {getProducts, searchProduct, createProduct, changeStock, changeStatus, modifyProduct, deleteProduct, getCategory, getSubCategory, getProductwithcategorys, createCategory, createSubCategory} = require('../controllers/products.controller');
 
 router.get('/products', getProducts);
 router.get('/searchproduct', searchProduct);
@@ -26,6 +26,8 @@ router.delete('/deleteproduct', deleteProduct);
 router.get('/category', getCategory);
 router.get('/subcategory', getSubCategory);
 router.get('/productcategory', getProductwithcategorys);
+router.post('/createcategory', createCategory);
+router.post('/createsubcategory',createSubCategory);
 
 //Rutas designadas a productos defectuosos
 
