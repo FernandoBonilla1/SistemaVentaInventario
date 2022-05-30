@@ -5,6 +5,11 @@ const bcrypt = require('bcrypt');
 const getUsers = async (req, res) =>{
     try{
         const users = await connection.query('SELECT * FROM users');
+        if(users === 0){
+            return res.status(400).json({
+                msg: "No hay usuarios"
+            })
+        }
         res.json({users: users.rows});
     } catch (error){
         res.status(500).json({
