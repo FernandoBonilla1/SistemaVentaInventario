@@ -42,6 +42,11 @@ const {getSuppliers, createSupplier} = require('../controllers/suppliers.control
 router.get('/suppliers', getSuppliers);
 router.post('/addsupplier', createSupplier);
 
+//Rutas designadas a reportes
+
+const {reporteExistecia} = require('../controllers/reportes.controllers');
+router.get('/get-reporte-existencia',reporteExistecia);
+
 //Rutas designadas a ventas
 
 const {getSale} = require('../controllers/sales.controllers');
