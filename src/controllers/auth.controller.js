@@ -1,5 +1,6 @@
 const connection = require('../config/db');
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var jwthelpers = require("../helpers/jwt.helpers");
 
@@ -26,7 +27,8 @@ const register = async (req, res) => {
                 })
             } else {
                 const banned = false;
-                const hashedPassword = await bcrypt.hash(password, 10);
+                const hashedPassword = await bcryptjs.hash(password, 10);
+                //const hashedPassword = await bcrypt.hash(password, 10);
                 //Se ingresa el usuario a la base de datos
                 const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[rut, name, surname, hashedPassword, email, address, phone, city, banned]);
                 const newClient = await connection.query("INSERT INTO client(rut) VALUES($1)",[rut])
@@ -54,7 +56,8 @@ const login = async (req, res) => {
             });
         }
         //Verificar password
-        const validPassword = await bcrypt.compare(password, users.rows[0].password);
+        const validPassword = await bcryptjs.compare(password, users.rows[0].password);
+        //const validPassword = await bcrypt.compare(password, users.rows[0].password);
 
         if (!validPassword) {
             return res.status(401).json({
