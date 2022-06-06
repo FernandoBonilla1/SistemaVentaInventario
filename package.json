@@ -2,7 +2,7 @@
   "name": "sistema-inventario",
   "version": "1.0.0",
   "engines": {
-    "node": "16.13.0"
+    "node": "12.11.1"
   },
   "description": "",
   "main": "index.js",
