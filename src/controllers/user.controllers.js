@@ -1,6 +1,7 @@
 
 const connection = require('../config/db');
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 
 const getUsers = async (req, res) =>{
     try{
@@ -24,7 +25,7 @@ const createUsers = async (req, res) =>{
     try {
         const { rut, name, surname, password, email, address, phone, city } = req.body;
         const banned = false;
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcryptjs.hash(password, 10);
         const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
          [rut,name,surname,hashedPassword,email,address,phone,city,banned]);
         res.status(200).json({
