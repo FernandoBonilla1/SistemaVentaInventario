@@ -18,6 +18,7 @@ const getDefectiveProduct = async (req, res) => {
 
 }
 
+
 const createDefectiveProduct = async (req, res) => {
     try {
         const { id_sale, id_product, description} = req.body;
