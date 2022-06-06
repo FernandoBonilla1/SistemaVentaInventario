@@ -33,9 +33,7 @@
     "pg-hstore": "^2.3.4",
     "postgres-schema-builder": "^1.3.0",
     "sequelize": "^6.19.0",
-    "serve": "^13.0.2"
-  },
-  "devDependencies": {
+    "serve": "^13.0.2",
     "nodemon": "^2.0.15"
   }
 }
