@@ -23,8 +23,7 @@ app.use('/api/',Router);
 app.use(authCtrl);
 
 
-let port = 3000;
-if (process.env.PORT) port = process.env.PORT;
+const port = process.env.PORT || 3000;
 app.listen(port, ()=>{  
     console.log(`El servidor esta escuchando en el puerto ${port}`);
 });
