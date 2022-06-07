@@ -7,7 +7,7 @@ const {authenticateToken} = require("../middleware/authorization")
 const {getUsers, createUsers, getUserById, deleteUser, updateUser} = require('../controllers/user.controllers');
 
 router.get('/users', getUsers);
-router.get('/searchuser', getUserById);
+router.post('/searchuser', getUserById);
 router.post('/createuser', createUsers);
 router.put('/updateuser', updateUser);
 router.delete('/deleteuser', deleteUser);
@@ -17,7 +17,7 @@ router.delete('/deleteuser', deleteUser);
 const {getProducts, searchProduct, createProduct, changeStock, changeStatus, modifyProduct, deleteProduct, getCategory, getSubCategory, getProductwithcategorys, createCategory, createSubCategory} = require('../controllers/products.controller');
 
 router.get('/products', getProducts);
-router.get('/searchproduct', searchProduct);
+router.post('/searchproduct', searchProduct);
 router.post('/addproduct', createProduct);
 router.put('/updatestock', changeStock);
 router.put('/updatestatusproduct', changeStatus);
@@ -25,7 +25,7 @@ router.put('/modifyproduct', modifyProduct);
 router.delete('/deleteproduct', deleteProduct);
 router.get('/category', getCategory);
 router.get('/subcategory', getSubCategory);
-router.get('/productcategory', getProductwithcategorys);
+router.post('/productcategory', getProductwithcategorys);
 router.post('/createcategory', createCategory);
 router.post('/createsubcategory',createSubCategory);
 
