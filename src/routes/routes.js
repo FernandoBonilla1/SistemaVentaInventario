@@ -53,4 +53,6 @@ const {getSale} = require('../controllers/sales.controllers');
 
 router.get('/sales',getSale);
 
+
+
 module.exports = router;
