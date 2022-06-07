@@ -73,10 +73,15 @@ const login = async (req, res) => {
         //return res.status(200).json({msg: "Ingreso exitoso"})
         //JWT
 
-        let tokens = jwthelpers.jwtTokens(users.rows[0]);
-        res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true });
+        //let tokens = jwthelpers.jwtTokens(users.rows[0]);
+        //res.cookie('refresh_token', tokens.refreshToken, { httpOnly: true });
         res.status(200).json({
-            tokens,
+            rut: users.rows[0].rut,
+            name: users.rows[0].name,
+            surname: users.rows[0].surname,
+            email: users.rows[0].email,
+            address: users.rows[0].address,
+            phone: users.rows[0].city,
             msg: "Sesion iniciada correctamente."
         });
 
