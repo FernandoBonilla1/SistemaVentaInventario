@@ -81,11 +81,10 @@ const login = async (req, res) => {
             surname: users.rows[0].surname,
             email: users.rows[0].email,
             address: users.rows[0].address,
-            phone: users.rows[0].city,
+            phone: users.rows[0].phone,
+            city: users.rows[0].city,
             msg: "Sesion iniciada correctamente."
         });
-
-
     } catch (error) {
         res.status(401).json({ error: error.message });
     }
