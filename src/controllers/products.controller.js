@@ -1,5 +1,3 @@
-const { restart } = require('nodemon');
-const { INTEGER } = require('sequelize');
 const connection = require('../config/db');
 
 function capitalizarPrimeraLetra(str) {
