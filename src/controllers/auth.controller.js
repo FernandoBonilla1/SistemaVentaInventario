@@ -83,7 +83,7 @@ const login = async (req, res) => {
             address: users.rows[0].address,
             phone: users.rows[0].phone,
             city: users.rows[0].city,
-            msg: "Sesion iniciada correctamente."
+            status: 200
         });
     } catch (error) {
         res.status(401).json({ error: error.message });
