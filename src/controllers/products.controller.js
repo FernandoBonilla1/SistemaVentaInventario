@@ -126,7 +126,7 @@ const getProductwithcategorys = async (req, res) => {
             return res.status(200).json({ products: products1.rows });
         } else {
             if (id_subcategory == undefined) {
-                const products1 = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1', [id_category])
+                const products1 = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1', [id_category])
                 if (products1.rows.length === 0) {
                     return res.status(200).json({
                         msg: "No hay productos"
@@ -135,7 +135,7 @@ const getProductwithcategorys = async (req, res) => {
                 return res.status(200).json({ products: products1.rows });
             } else {
                 if (id_category == undefined) {
-                    const products1 = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where subcategory.id = $1', [id_subcategory])
+                    const products1 = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where subcategory.id = $1', [id_subcategory])
                     if (products1.rows.length === 0) {
                         return res.status(200).json({
                             msg: "No hay productos"
@@ -143,7 +143,7 @@ const getProductwithcategorys = async (req, res) => {
                     }
                     return res.status(200).json({ products: products1.rows });
                 } else {
-                    const products = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1 and subcategory.id = $2', [id_category, id_subcategory])
+                    const products = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1 and subcategory.id = $2', [id_category, id_subcategory])
                     if (products.rows.length === 0) {
                         return res.status(200).json({
                             msg: "No hay productos"
@@ -164,7 +164,7 @@ const getProductwithcategorys = async (req, res) => {
 const selectProduct = async (req, res) => {
     try{
         const {id_product, id_category, id_subcategory} = req.body;
-        const products1 = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as category, subcategory.id as subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where id = $1 and category.id = $2 and subcategory.id = $3', [id_product, id_category, id_subcategory])
+        const products1 = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as idcategory, subcategory.id as idsubcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where id = $1 and category.id = $2 and subcategory.id = $3', [id_product, id_category, id_subcategory])
         if (products1.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos"
