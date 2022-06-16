@@ -83,6 +83,7 @@ const login = async (req, res) => {
             address: users.rows[0].address,
             phone: users.rows[0].phone,
             city: users.rows[0].city,
+            role: users.rows[0].Role,
             status: 200
         });
     } catch (error) {
