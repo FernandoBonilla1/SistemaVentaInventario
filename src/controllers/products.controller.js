@@ -97,9 +97,9 @@ const getSubCategory = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = await connection.query('SELECT * FROM product');
+        const products = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)');
         if (products.rows.length === 0) {
-            res.status(401).json({
+            res.status(200).json({
                 msg: "No hay productos"
             })
         }
@@ -112,6 +112,7 @@ const getProducts = async (req, res) => {
     }
 
 }
+
 
 const getProductwithcategorys = async (req, res) => {
     try {

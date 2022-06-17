@@ -26,15 +26,23 @@ const register = async (req, res) => {
                     msg: "Debe rellenar todos los campos obligatorios"
                 })
             } else {
+                const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
                 const banned = false;
                 const hashedPassword = await bcryptjs.hash(password, 10);
+                //Detecta si el rut ingresado es correcto
+                if (users.rows.length === 0) {
+                    const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,Role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [rut, name, surname, hashedPassword, email, address, phone, city, banned, 1]);
+                    const newClient = await connection.query("INSERT INTO client(rut) VALUES($1)", [rut])
+                    res.status(200).json({
+                        msg: `Se logro crear el cliente con rut: ${rut}`
+                    });
+                } else {
+                    
+                }
+
                 //const hashedPassword = await bcrypt.hash(password, 10);
                 //Se ingresa el usuario a la base de datos
-                const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[rut, name, surname, hashedPassword, email, address, phone, city, banned]);
-                const newClient = await connection.query("INSERT INTO client(rut) VALUES($1)",[rut])
-                res.status(200).json({
-                    msg: `Se logro crear el cliente con rut: ${rut}`
-                });
+
             }
         }
     } catch (error) {
@@ -42,6 +50,27 @@ const register = async (req, res) => {
             msg: "No se pudo ingresar el usuario",
             error
         })
+    }
+}
+
+const registerFuncionario = async (req, res) => {
+    try {
+        const { rut, name, surname, password, email, address, phone, city } = req.body;
+        if (rut == undefined || name == undefined || surname == undefined || password == undefined || email == undefined) {
+            return res.status(400).json({
+                msg: "Debe incluir todos los campos obligatorios"
+            })
+        } else {
+            if (rut == "" || name == "" || surname == "" || password == "" || email == "") {
+                return res.status(400).json({
+                    msg: "Debe rellenar todos los campos obligatorios"
+                })
+            } else {
+
+            }
+        }
+    } catch (error) {
+        res.status(401).json({ error: error.message });
     }
 }
 
@@ -90,7 +119,7 @@ const login = async (req, res) => {
 }
 
 const loginFuncionario = async (req, res) => {
-    try{
+    try {
         const { email, password } = req.body;
         const users = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
         //Detecta si el rut ingresado es correcto
@@ -107,7 +136,7 @@ const loginFuncionario = async (req, res) => {
             })
         }
         //VERIFICA EL ROL
-        if((users.rows[0].Role != 1)){
+        if ((users.rows[0].Role != 1)) {
             res.status(200).json({
                 rut: users.rows[0].rut,
                 name: users.rows[0].name,
@@ -119,12 +148,12 @@ const loginFuncionario = async (req, res) => {
                 role: users.rows[0].Role,
                 status: 200
             });
-        }else{
+        } else {
             return res.status(401).json({
                 msg: "Que hace aqui pelmacin no puede entrar aqui."
             })
         }
-    } catch (error){
+    } catch (error) {
         res.status(401).json({ error: error.message });
     }
 }
