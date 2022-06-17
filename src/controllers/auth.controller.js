@@ -1,5 +1,4 @@
 const connection = require('../config/db');
-//const bcrypt = require('bcrypt');
 const bcryptjs = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var jwthelpers = require("../helpers/jwt.helpers");
@@ -37,12 +36,10 @@ const register = async (req, res) => {
                         msg: `Se logro crear el cliente con rut: ${rut}`
                     });
                 } else {
-                    
+                    res.status(400).json({
+                        msg: "No se puede registrar cliente con un rut existente"
+                    });
                 }
-
-                //const hashedPassword = await bcrypt.hash(password, 10);
-                //Se ingresa el usuario a la base de datos
-
             }
         }
     } catch (error) {

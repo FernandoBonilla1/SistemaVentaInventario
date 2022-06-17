@@ -189,7 +189,7 @@ const searchProduct = async (req, res) => {
             });
         } else {
             nameCapitalize = capitalizarPrimeraLetra(name);
-            const products = await connection.query(`SELECT * FROM product WHERE name LIKE '${nameCapitalize}%'`);
+            const products = await connection.query(`SELECT product.id, product.name, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`);
             if (products.rows.length === 0) {
                 return res.status(401).json({
                     msg: "El producto no existe."
