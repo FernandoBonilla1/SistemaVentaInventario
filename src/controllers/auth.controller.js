@@ -52,18 +52,31 @@ const register = async (req, res) => {
 
 const registerFuncionario = async (req, res) => {
     try {
-        const { rut, name, surname, password, email, address, phone, city } = req.body;
+        const { rut, name, surname, password, email, address, phone, city, role } = req.body;
         if (rut == undefined || name == undefined || surname == undefined || password == undefined || email == undefined) {
             return res.status(400).json({
                 msg: "Debe incluir todos los campos obligatorios"
             })
         } else {
-            if (rut == "" || name == "" || surname == "" || password == "" || email == "") {
+            if (rut == "" || name == "" || surname == "" || password == "" || email == "" || role == 1) {
                 return res.status(400).json({
                     msg: "Debe rellenar todos los campos obligatorios"
                 })
             } else {
-
+                const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
+                const banned = false;
+                const hashedPassword = await bcryptjs.hash(password, 10);
+                if (users.rows.length === 0) {
+                    const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,Role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [rut, name, surname, hashedPassword, email, address, phone, city, banned, role]);
+                    res.status(200).json({
+                        msg: `Se logro crear el nuevo funcionario con rut: ${rut}`
+                    });
+                } else {
+                    const newUser = await connection.query(`UPDATE users SET name = $1, surname = $2, password = $3, email = $4, address = $5, phone = $6, city = $7, banned = $8, Role = $9`,[name, surname, password, email, address, phone, city, banned, role])
+                    res.status(200).json({
+                        msg: "Se actualizaron los datos del funcionario"
+                    });
+                }
             }
         }
     } catch (error) {
@@ -159,5 +172,6 @@ module.exports = {
     register,
     login,
     logout,
-    loginFuncionario
+    loginFuncionario,
+    registerFuncionario
 }
