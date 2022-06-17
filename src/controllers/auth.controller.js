@@ -57,8 +57,6 @@ const login = async (req, res) => {
         }
         //Verificar password
         const validPassword = await bcryptjs.compare(password, users.rows[0].password);
-        //const validPassword = await bcrypt.compare(password, users.rows[0].password);
-
         if (!validPassword) {
             return res.status(401).json({
                 msg: "Contraseña incorrecta"
@@ -91,9 +89,49 @@ const login = async (req, res) => {
     }
 }
 
+const loginFuncionario = async (req, res) => {
+    try{
+        const { email, password } = req.body;
+        const users = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
+        //Detecta si el rut ingresado es correcto
+        if (users.rows.length === 0) {
+            return res.status(401).json({
+                msg: "El email no existe"
+            });
+        }
+        //Verificar password
+        const validPassword = await bcryptjs.compare(password, users.rows[0].password);
+        if (!validPassword) {
+            return res.status(401).json({
+                msg: "Contraseña incorrecta"
+            })
+        }
+        //VERIFICA EL ROL
+        if((users.rows[0].Role != 1)){
+            res.status(200).json({
+                rut: users.rows[0].rut,
+                name: users.rows[0].name,
+                surname: users.rows[0].surname,
+                email: users.rows[0].email,
+                address: users.rows[0].address,
+                phone: users.rows[0].phone,
+                city: users.rows[0].city,
+                role: users.rows[0].Role,
+                status: 200
+            });
+        }else{
+            return res.status(401).json({
+                msg: "Que hace aqui pelmacin no puede entrar aqui."
+            })
+        }
+    } catch (error){
+        res.status(401).json({ error: error.message });
+    }
+}
 
 module.exports = {
     register,
     login,
-    logout
+    logout,
+    loginFuncionario
 }
