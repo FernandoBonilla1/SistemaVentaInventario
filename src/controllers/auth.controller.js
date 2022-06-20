@@ -52,13 +52,13 @@ const register = async (req, res) => {
 
 const registerFuncionario = async (req, res) => {
     try {
-        const { rut, name, surname, password, email, address, phone, city, role } = req.body;
+        const { rut, name, surname, password, email, address, phone, city, Role } = req.body;
         if (rut == undefined || name == undefined || surname == undefined || password == undefined || email == undefined) {
             return res.status(400).json({
                 msg: "Debe incluir todos los campos obligatorios"
             })
         } else {
-            if (rut == "" || name == "" || surname == "" || password == "" || email == "" || role == 1) {
+            if (rut == "" || name == "" || surname == "" || password == "" || email == "" || Role == 1) {
                 return res.status(400).json({
                     msg: "Debe rellenar todos los campos obligatorios"
                 })
@@ -67,12 +67,12 @@ const registerFuncionario = async (req, res) => {
                 const banned = false;
                 const hashedPassword = await bcryptjs.hash(password, 10);
                 if (users.rows.length === 0) {
-                    const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,Role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [rut, name, surname, hashedPassword, email, address, phone, city, banned, role]);
+                    const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [rut, name, surname, hashedPassword, email, address, phone, city, banned, Role]);
                     res.status(200).json({
                         msg: `Se logro crear el nuevo funcionario con rut: ${rut}`
                     });
                 } else {
-                    const newUser = await connection.query(`UPDATE users SET name = $1, surname = $2, password = $3, email = $4, address = $5, phone = $6, city = $7, banned = $8, Role = $9`,[name, surname, password, email, address, phone, city, banned, role])
+                    const newUser = await connection.query(`UPDATE users SET name = $1, surname = $2, password = $3, email = $4, address = $5, phone = $6, city = $7, banned = $8, role = $9 Where rut = $10`,[name, surname, hashedPassword, email, address, phone, city, banned, Role, rut])
                     res.status(200).json({
                         msg: "Se actualizaron los datos del funcionario"
                     });
@@ -120,7 +120,7 @@ const login = async (req, res) => {
             address: users.rows[0].address,
             phone: users.rows[0].phone,
             city: users.rows[0].city,
-            role: users.rows[0].Role,
+            role: users.rows[0].role,
             status: 200
         });
     } catch (error) {
@@ -146,7 +146,7 @@ const loginFuncionario = async (req, res) => {
             })
         }
         //VERIFICA EL ROL
-        if ((users.rows[0].Role != 1)) {
+        if ((users.rows[0].role != 1)) {
             res.status(200).json({
                 rut: users.rows[0].rut,
                 name: users.rows[0].name,
@@ -155,7 +155,7 @@ const loginFuncionario = async (req, res) => {
                 address: users.rows[0].address,
                 phone: users.rows[0].phone,
                 city: users.rows[0].city,
-                role: users.rows[0].Role,
+                role: users.rows[0].role,
                 status: 200
             });
         } else {
