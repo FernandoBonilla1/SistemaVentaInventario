@@ -47,6 +47,13 @@ router.post('/addsupplier', createSupplier);
 const {reporteExistecia} = require('../controllers/reportes.controllers');
 router.get('/get-reporte-existencia',reporteExistecia);
 
+//Rutas designada para productos deseados
+const {getWantedCart,addProductWantedCart,ModifyWantedCart,deleteProductWantedCart} = require('../controllers/wantedcart.controllers')
+
+router.post('/getwantedcart',getWantedCart);
+router.post('/addproductwantedcart',addProductWantedCart);
+router.post('/modifyproductwantedcart',ModifyWantedCart);
+router.post('/deleteproductwantedcart',deleteProductWantedCart);
 //Rutas designadas a ventas
 
 const {getSale} = require('../controllers/sales.controllers');

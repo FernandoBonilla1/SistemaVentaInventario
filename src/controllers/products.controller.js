@@ -9,7 +9,7 @@ const getCategory = async (req, res) => {
     try {
         const category = await connection.query('SELECT * FROM category');
         if (category.rows.length === 0) {
-            res.status(401).json({
+            res.status(200).json({
                 msg: "No hay categorias"
             })
         }
@@ -82,7 +82,7 @@ const getSubCategory = async (req, res) => {
     try {
         const subcategory = await connection.query('SELECT * FROM subcategory');
         if (subcategory.rows.length === 0) {
-            res.status(401).json({
+            res.status(200).json({
                 msg: "No hay subcategorias"
             })
         }
