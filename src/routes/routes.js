@@ -33,7 +33,7 @@ router.post('/selectproduct', selectProduct);
 
 const {getDefectiveProduct, createDefectiveProduct} = require('../controllers/defective_product.controllers')
 
-router.get('/defectiveproduct', getDefectiveProduct);
+router.post('/defectiveproduct', getDefectiveProduct);
 router.post('/adddefectiveproduct', createDefectiveProduct);
 
 //Rutas designadas a proveedores
@@ -56,9 +56,11 @@ router.post('/modifyproductwantedcart',ModifyWantedCart);
 router.post('/deleteproductwantedcart',deleteProductWantedCart);
 //Rutas designadas a ventas
 
-const {getSale} = require('../controllers/sales.controllers');
+const {getSale,addSale,addProductToSale} = require('../controllers/sales.controllers');
 
 router.get('/sales',getSale);
+router.post('/addsale',addSale);
+router.post('/adddproductsale',addProductToSale);
 
 
 

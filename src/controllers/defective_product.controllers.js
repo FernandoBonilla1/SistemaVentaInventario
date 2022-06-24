@@ -2,9 +2,10 @@ const connection = require('../config/db');
 
 const getDefectiveProduct = async (req, res) => {
     try {
-        const defective_products = await connection.query('SELECT * FROM defective_product');
+        const{id_sale, id_product} = req.body
+        const defective_products = await connection.query('Select defective_product.id, sale.id as idventa, sale.date as fecha, product.id as idproducto, product.name as nombreproducto, defective_product.desciption from defective_product inner join sale on (sale.id = defective_product.id_sale) inner join product on (defective_product.id_product = product.id) Where sale.id = $1 and product.id = $2',[id_sale, id_product]);
         if (defective_products.rows.length === 0) {
-            return res.status(400).json({
+            return res.status(200).json({
                 msg: "No hay productos defectuosos"
             })
         }
@@ -33,7 +34,7 @@ const createDefectiveProduct = async (req, res) => {
                 })
             }
             else {
-                const defective_products = await connection.query('INSERT INTO product(id_sale,id_product,description) VALUES($1,$2,$3,$4)', [id_sale, id_product, description])
+                const defective_products = await connection.query('INSERT INTO defective_product(id_sale,id_product,desciption) VALUES($1,$2,$3)', [id_sale, id_product, description])
                 res.status(200).json({
                     msg: `Se logro crear el producto defectuoso con id: ${id}`
                 });
