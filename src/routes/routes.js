@@ -56,11 +56,12 @@ router.post('/modifyproductwantedcart',ModifyWantedCart);
 router.post('/deleteproductwantedcart',deleteProductWantedCart);
 //Rutas designadas a ventas
 
-const {getSale,addSale,addProductToSale} = require('../controllers/sales.controllers');
+const {getSale,addSale,addProductToSale,confirmsale} = require('../controllers/sales.controllers');
 
 router.get('/sales',getSale);
 router.post('/addsale',addSale);
-router.post('/adddproductsale',addProductToSale);
+router.post('/addproductsale',addProductToSale);
+router.post('/confirmansale',confirmsale);
 
 
 
