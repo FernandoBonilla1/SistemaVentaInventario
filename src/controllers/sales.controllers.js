@@ -2,8 +2,14 @@ const connection = require('../config/db');
 
 const getSale = async (req, res) => {
     try {
-        const sales = await connection.query('SELECT * FROM sale');
-        res.status(200).json({ sales: sales.rows });
+        const {id} = req.body
+        const sales = await connection.query('Select sale.id as id_sale, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1',[id]);
+        if(sales.rows.length === 0){
+            return res.status(200).json({
+                msg: "No hay productos en la venta"
+            })
+        }
+        res.status(200).json({ venta: sales.rows });
     } catch (error) {
         res.status(500).json({
             msg: "No se puedieron acceder a la tabla de ventas",

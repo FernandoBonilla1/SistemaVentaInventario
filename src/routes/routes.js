@@ -58,7 +58,7 @@ router.post('/deleteproductwantedcart',deleteProductWantedCart);
 
 const {getSale,addSale,addProductToSale,confirmsale} = require('../controllers/sales.controllers');
 
-router.get('/sales',getSale);
+router.post('/sales',getSale);
 router.post('/addsale',addSale);
 router.post('/addproductsale',addProductToSale);
 router.post('/confirmansale',confirmsale);
