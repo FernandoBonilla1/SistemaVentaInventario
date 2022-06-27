@@ -37,6 +37,10 @@ const addSale = async (req, res) => {
     }
 }
 
+const removeProductToSale = async(req, res) =>{
+    
+}
+
 const addProductToSale = async (req, res) => {
     try {
         const { id, id_product, amount } = req.body

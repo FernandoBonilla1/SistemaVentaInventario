@@ -22,7 +22,7 @@ router.post('/addproduct', createProduct);
 router.put('/updatestock', changeStock);
 router.put('/updatestatusproduct', changeStatus);
 router.put('/modifyproduct', modifyProduct);
-router.delete('/deleteproduct', deleteProduct);
+router.post('/deleteproduct', deleteProduct);
 router.get('/category', getCategory);
 router.get('/subcategory', getSubCategory);
 router.post('/productcategory', getProductwithcategorys);
