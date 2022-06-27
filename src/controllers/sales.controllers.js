@@ -38,7 +38,23 @@ const addSale = async (req, res) => {
 }
 
 const removeProductToSale = async(req, res) =>{
-    
+    try{
+        const {id, id_product} = req.body;
+        if (id == "") {
+            return res.status(400).json({
+                msg: "Debe especificar el producto"
+            })
+        } else {
+            const product = await connection.query('DELETE FROM details WHERE id_sale = $1 and id_product = $2', [id,id_product]);
+            res.status(200).json({
+                msg: `Se elimino el producto de la venta.`
+            })
+        }
+    } catch (error){
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla detalles"
+        })
+    }
 }
 
 const addProductToSale = async (req, res) => {
@@ -106,5 +122,6 @@ module.exports = {
     getSale,
     addSale,
     addProductToSale,
-    confirmsale
+    confirmsale,
+    removeProductToSale
 }

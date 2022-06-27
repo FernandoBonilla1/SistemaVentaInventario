@@ -41,13 +41,13 @@ const addProductWantedCart = async (req, res) => {
 
 const ModifyWantedCart = async (req, res) => {
     try {
-        const { id, amount } = req.body;
+        const { rut, id_product, amount } = req.body;
         if (amount < 0) {
             return res.status(400).json({
                 msg: "No puede ingresar valores negativos."
             })
         } else {
-            const product = await connection.query('UPDATE wantedcart SET amount = $1 WHERE id = $2', [amount, id])
+            const product = await connection.query('UPDATE wantedcart SET amount = $1 WHERE rut_user = $2 and id_product = $3', [amount, rut, id_product])
             res.status(200).json({
                 msg: `Se actualizo la cantidad del producto`
             });
@@ -62,13 +62,13 @@ const ModifyWantedCart = async (req, res) => {
 
 const deleteProductWantedCart = async (req, res) => {
     try{
-        const {id} = req.body;
-        if (id == "") {
+        const {rut, id_product} = req.body;
+        if (rut == "" || id_product == "") {
             return res.status(400).json({
                 msg: "Debe especificar el producto"
             })
         } else {
-            const product = await connection.query('DELETE FROM wantedcart WHERE id = $1', [id]);
+            const product = await connection.query('DELETE FROM wantedcart WHERE rut_user = $1 and id_product = $2', [rut,id_product]);
             res.status(200).json({
                 msg: `Se elimino el producto de la lista de deseados.`
             })

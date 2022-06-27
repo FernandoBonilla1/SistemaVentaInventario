@@ -57,11 +57,12 @@ router.post('/modifyproductwantedcart',ModifyWantedCart);
 router.post('/deleteproductwantedcart',deleteProductWantedCart);
 //Rutas designadas a ventas
 
-const {getSale,addSale,addProductToSale,confirmsale} = require('../controllers/sales.controllers');
+const {getSale,addSale,addProductToSale,confirmsale,removeProductToSale} = require('../controllers/sales.controllers');
 
 router.post('/sales',getSale);
 router.post('/addsale',addSale);
 router.post('/addproductsale',addProductToSale);
+router.post('/removeproductsale',removeProductToSale);
 router.post('/confirmansale',confirmsale);
 
 

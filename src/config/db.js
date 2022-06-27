@@ -8,7 +8,7 @@ const connection = new Pool({
     port: '5432',
     ssl: {
         rejectUnauthorized: false
-    }
+    } 
 });
 
 connection.connect((error) =>{
