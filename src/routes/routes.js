@@ -44,8 +44,9 @@ router.post('/addsupplier', createSupplier);
 
 //Rutas designadas a reportes
 
-const {reporteExistecia} = require('../controllers/reportes.controllers');
+const {reporteExistecia,boleta} = require('../controllers/reportes.controllers');
 router.get('/get-reporte-existencia',reporteExistecia);
+router.get('/get-boleta',boleta);
 
 //Rutas designada para productos deseados
 const {getWantedCart,addProductWantedCart,ModifyWantedCart,deleteProductWantedCart} = require('../controllers/wantedcart.controllers')
