@@ -28,7 +28,7 @@ const addProductWantedCart = async (req, res) => {
         } else {
             const product = await connection.query('INSERT INTO wantedcart(rut_user, id_product, amount) VALUES($1,$2,$3)', [rut, id_product, amount])
             res.status(200).json({
-                msg: `Se logro crear el producto con id: ${id_product}`
+                msg: `Se logro agregar el producto al carrito id: ${id_product}`
             });
         }
     } catch (error) {
