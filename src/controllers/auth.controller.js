@@ -90,20 +90,20 @@ const login = async (req, res) => {
         const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
         //Detecta si el rut ingresado es correcto
         if (users.rows.length === 0) {
-            return res.status(401).json({
+            return res.status(400).json({
                 msg: "El rut no existe"
             });
         }
         //Verificar password
         const validPassword = await bcryptjs.compare(password, users.rows[0].password);
         if (!validPassword) {
-            return res.status(401).json({
+            return res.status(400).json({
                 msg: "Contraseña incorrecta"
             })
         }
         //Verificar si el usuario esta expulsado
         if (users.rows[0].banned) {
-            return res.status(401).json({
+            return res.status(400).json({
                 msg: "El usuario esta expulsado de la plataforma"
             })
         }
@@ -134,14 +134,14 @@ const loginFuncionario = async (req, res) => {
         const users = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
         //Detecta si el rut ingresado es correcto
         if (users.rows.length === 0) {
-            return res.status(401).json({
+            return res.status(400).json({
                 msg: "El email no existe"
             });
         }
         //Verificar password
         const validPassword = await bcryptjs.compare(password, users.rows[0].password);
         if (!validPassword) {
-            return res.status(401).json({
+            return res.status(400).json({
                 msg: "Contraseña incorrecta"
             })
         }
@@ -159,8 +159,8 @@ const loginFuncionario = async (req, res) => {
                 status: 200
             });
         } else {
-            return res.status(401).json({
-                msg: "Que hace aqui pelmacin no puede entrar aqui."
+            return res.status(400).json({
+                msg: "Un cliente un puede acceder por este portal."
             })
         }
     } catch (error) {
