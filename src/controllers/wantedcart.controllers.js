@@ -9,7 +9,7 @@ const getWantedCart = async (req, res) => {
                 msg: "No hay productos en tu lista de deseados"
             })
         }
-        res.status(200).json({ want: wantedcart.rows });
+        res.status(200).json(wantedcart.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla wantedcart",

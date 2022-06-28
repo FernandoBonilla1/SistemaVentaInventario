@@ -20,7 +20,7 @@ const getSale = async (req, res) => {
                 msg: "No hay productos en la venta"
             })
         }
-        res.status(200).json({ venta: sales.rows });
+        res.status(200).json(sales.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se puedieron acceder a la tabla de ventas",

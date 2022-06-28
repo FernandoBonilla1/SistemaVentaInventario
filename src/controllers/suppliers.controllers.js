@@ -3,7 +3,7 @@ const connection = require('../config/db');
 const getSuppliers = async (req, res) =>{
     try{
         const suppliers = await connection.query('SELECT * FROM supplier');
-        res.json({suppliers: suppliers.rows});
+        res.json(suppliers.rows);
     } catch (error){
         res.status(500).json({
             msg: "No se puedieron acceder a la tabla de proveedores",

@@ -13,7 +13,7 @@ const getProductwithStockMin = async (req, res) =>{
                 msg: "No hay productos con stockmin"
             })
         }
-        res.status(200).json({products: product.rows})
+        res.status(200).json(product.rows)
     } catch(error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
@@ -32,7 +32,7 @@ const getRandomProducts = async (req, res) =>{
                 msg: "No hay productos"
             })
         }
-        res.status(200).json({products: product.rows})
+        res.status(200).json(product.rows)
     } catch(error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
@@ -50,7 +50,7 @@ const getRandomProductCategory = async (req, res) =>{
                 msg: "No hay productos"
             })
         }
-        res.status(200).json({products: product.rows})
+        res.status(200).json(product.rows)
     } catch(error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
@@ -68,7 +68,7 @@ const getCategory = async (req, res) => {
                 msg: "No hay categorias"
             })
         }
-        res.status(200).json({ categorys: category.rows });
+        res.status(200).json(category.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla category",
@@ -141,7 +141,7 @@ const getSubCategory = async (req, res) => {
                 msg: "No hay subcategorias"
             })
         }
-        res.status(200).json({ subcategorys: subcategory.rows });
+        res.status(200).json(subcategory.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla subcategory",
@@ -158,7 +158,7 @@ const getProducts = async (req, res) => {
                 msg: "No hay productos"
             })
         }
-        res.status(200).json({ products: products.rows });
+        res.status(200).json(products.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la lista de productos",
@@ -179,7 +179,7 @@ const getProductwithcategorys = async (req, res) => {
                     msg: "No hay productos"
                 })
             }
-            return res.status(200).json({ products: products1.rows });
+            return res.status(200).json(products1.rows);
         } else {
             if (id_subcategory == undefined) {
                 const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1', [id_category])
@@ -188,7 +188,7 @@ const getProductwithcategorys = async (req, res) => {
                         msg: "No hay productos"
                     })
                 }
-                return res.status(200).json({ products: products1.rows });
+                return res.status(200).json(products1.rows);
             } else {
                 if (id_category == undefined) {
                     const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where subcategory.id = $1', [id_subcategory])
@@ -197,7 +197,7 @@ const getProductwithcategorys = async (req, res) => {
                             msg: "No hay productos"
                         })
                     }
-                    return res.status(200).json({ products: products1.rows });
+                    return res.status(200).json(products1.rows);
                 } else {
                     const products = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1 and subcategory.id = $2', [id_category, id_subcategory])
                     if (products.rows.length === 0) {
@@ -205,7 +205,7 @@ const getProductwithcategorys = async (req, res) => {
                             msg: "No hay productos"
                         })
                     }
-                    res.status(200).json({ products: products.rows });
+                    res.status(200).json(products.rows);
                 }
             }
         }
@@ -226,7 +226,7 @@ const selectProduct = async (req, res) => {
                 msg: "No hay productos"
             })
         }
-        return res.status(200).json({ products: products1.rows });
+        return res.status(200).json(products1.rows);
     } catch(error){
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
@@ -250,7 +250,7 @@ const searchProduct = async (req, res) => {
                     msg: "El producto no existe."
                 });
             }
-            res.status(200).json({ products: products.rows });
+            res.status(200).json(products.rows);
         }
     } catch (error) {
         res.status(500).json({

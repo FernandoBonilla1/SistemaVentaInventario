@@ -9,7 +9,7 @@ const getDefectiveProduct = async (req, res) => {
                 msg: "No hay productos defectuosos"
             })
         }
-        res.status(200).json({ defective_products: defective_products.rows });
+        res.status(200).json(defective_products.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla de productos defectuosos",

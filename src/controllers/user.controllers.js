@@ -11,7 +11,7 @@ const getUsers = async (req, res) =>{
                 msg: "No hay usuarios"
             })
         }
-        res.json({users: users.rows});
+        res.json(users.rows);
     } catch (error){
         res.status(500).json({
             msg: "No se puedieron acceder a la lista de usuarios",
@@ -43,7 +43,7 @@ const getUserById = async (req, res) =>{
     try{
         const {rut} = req.body;
         const users = await connection.query('SELECT * FROM users WHERE rut = $1',[rut]);
-        res.status(200).json({users: users.rows});
+        res.status(200).json(users.rows);
     } catch (error){
         res.status(500).json({
             msg: "No se pudo obtener al usuario",
