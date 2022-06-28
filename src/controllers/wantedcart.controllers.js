@@ -5,7 +5,7 @@ const getWantedCart = async (req, res) => {
         const {rut} = req.body;
         const wantedcart = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1', [rut]);
         if (wantedcart.rows.length === 0) {
-            res.status(200).json({
+            return res.status(200).json({
                 msg: "No hay productos en tu lista de deseados"
             })
         }
