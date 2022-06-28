@@ -52,7 +52,7 @@ const boleta = async (req, res) => {
 
             doc.fontSize(12);
 
-            doc.text(`N° Venta: ${id_venta}`, {
+            doc.text(`Codigo Venta: ${id_venta}`, {
                 marginLeft: 150,
                 align: 'left'
             })
