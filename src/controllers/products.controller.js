@@ -5,14 +5,66 @@ function capitalizarPrimeraLetra(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+const getProductwithStockMin = async (req, res) =>{
+    try{
+        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url, product.stockmin as stockmin from product INNER join subcategory on (product.id_subcategory = subcategory.id) where (product.amount <= product.stockmin) ');
+        if (product.rows.length === 0){
+            return res.status(200).json({
+                msg: "No hay productos con stockmin"
+            })
+        }
+        res.status(200).json({products: product.rows})
+    } catch(error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla producto",
+            error
+        })
+    }
+}
 
+
+
+const getRandomProducts = async (req, res) =>{
+    try{
+        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) order by random() limit 6');
+        if (product.rows.length === 0){
+            return res.status(200).json({
+                msg: "No hay productos"
+            })
+        }
+        res.status(200).json({products: product.rows})
+    } catch(error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla producto",
+            error
+        })
+    }
+}
+
+const getRandomProductCategory = async (req, res) =>{
+    try{
+        const {id_category} = req.body
+        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) where subcategory.id_category = $1 order by random() limit 4',[id_category]);
+        if (product.rows.length === 0){
+            return res.status(200).json({
+                msg: "No hay productos"
+            })
+        }
+        res.status(200).json({products: product.rows})
+    } catch(error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla producto",
+            error
+        })
+    }
+}
 
 
 const getCategory = async (req, res) => {
     try {
         const category = await connection.query('SELECT * FROM category');
         if (category.rows.length === 0) {
-            res.status(200).json({
+            return res.status(200).json({
                 msg: "No hay categorias"
             })
         }
@@ -85,7 +137,7 @@ const getSubCategory = async (req, res) => {
     try {
         const subcategory = await connection.query('SELECT * FROM subcategory');
         if (subcategory.rows.length === 0) {
-            res.status(200).json({
+            return res.status(200).json({
                 msg: "No hay subcategorias"
             })
         }
@@ -382,5 +434,8 @@ module.exports = {
     getProductwithcategorys,
     createCategory,
     createSubCategory,
-    selectProduct
+    selectProduct,
+    getRandomProductCategory,
+    getRandomProducts,
+    getProductwithStockMin
 }
