@@ -59,97 +59,6 @@ const getRandomProductCategory = async (req, res) =>{
     }
 }
 
-
-const getCategory = async (req, res) => {
-    try {
-        const category = await connection.query('SELECT * FROM category');
-        if (category.rows.length === 0) {
-            return res.status(200).json({
-                msg: "No hay categorias"
-            })
-        }
-        res.status(200).json(category.rows);
-    } catch (error) {
-        res.status(500).json({
-            msg: "No se pudo acceder a la tabla category",
-            error
-        })
-    }
-}
-
-const createCategory = async (req, res) => {
-    try {
-        const { name, description } = req.body;
-        const removed = false;
-        if (name == undefined || description == undefined) {
-            return res.status(401).json({
-                msg: "Debe incluir todos los campos."
-            });
-        } else {
-            if (name == "") {
-                return res.status(401).json({
-                    msg: "La categoria debe incluir nombre."
-                });
-            } else {
-                const category = await connection.query('INSERT INTO category(name,description,removed) VALUES($1,$2,$3)', [name, description, removed])
-                res.status(200).json({
-                    msg: `Se logro crear la categoria con nombre: ${name}`
-                });
-            }
-        }
-    } catch (error) {
-        res.status(500).json({
-            msg: "No se pudo acceder a la tabla category",
-            error
-        })
-    }
-}
-
-const createSubCategory = async (req, res) => {
-    try {
-        const { name, description, id_category } = req.body;
-        const removed = false;
-        if (name == undefined || id_category == undefined) {
-            return res.status(401).json({
-                msg: "Debe incluir todos los campos."
-            });
-        } else {
-            if (name == "" || id_category == "") {
-                return res.status(401).json({
-                    msg: "La subcategoria debe incluir nombre e id de categoria."
-                });
-            } else {
-                const subcategory = await connection.query('INSERT INTO subcategory(name,description,removed,id_category) VALUES($1,$2,$3,$4)', [name, description, removed, id_category])
-                res.status(200).json({
-                    msg: `Se logro crear la subcategoria con nombre: ${name}`
-                });
-            }
-        }
-    } catch (error) {
-        res.status(500).json({
-            msg: "No se pudo acceder a la tabla subcategory",
-            error
-        })
-    }
-}
-
-const getSubCategory = async (req, res) => {
-    try {
-        const subcategory = await connection.query('SELECT * FROM subcategory');
-        if (subcategory.rows.length === 0) {
-            return res.status(200).json({
-                msg: "No hay subcategorias"
-            })
-        }
-        res.status(200).json(subcategory.rows);
-    } catch (error) {
-        res.status(500).json({
-            msg: "No se pudo acceder a la tabla subcategory",
-            error
-        })
-    }
-}
-
 const getProducts = async (req, res) => {
     try {
         const products = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)');
@@ -419,8 +328,6 @@ const changeStatus = async (req, res) => {
 }
 
 
-
-
 module.exports = {
     getProducts,
     searchProduct,
@@ -429,11 +336,7 @@ module.exports = {
     changeStatus,
     modifyProduct,
     deleteProduct,
-    getCategory,
-    getSubCategory,
     getProductwithcategorys,
-    createCategory,
-    createSubCategory,
     selectProduct,
     getRandomProductCategory,
     getRandomProducts,

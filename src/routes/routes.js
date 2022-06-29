@@ -14,7 +14,7 @@ router.delete('/deleteuser', deleteUser);
 
 //Rutas designadas a los productos
 
-const {getProducts, searchProduct, createProduct, changeStock, changeStatus, modifyProduct, deleteProduct, getCategory, getSubCategory, getProductwithcategorys, createCategory, createSubCategory, selectProduct, getRandomProductCategory,getRandomProducts, getProductwithStockMin} = require('../controllers/products.controller');
+const {getProducts, searchProduct, createProduct, changeStock, changeStatus, modifyProduct, deleteProduct, getProductwithcategorys, selectProduct, getRandomProductCategory,getRandomProducts, getProductwithStockMin} = require('../controllers/products.controller');
 
 router.get('/products', getProducts);
 router.post('/searchproduct', searchProduct);
@@ -23,15 +23,23 @@ router.put('/updatestock', changeStock);
 router.put('/updatestatusproduct', changeStatus);
 router.put('/modifyproduct', modifyProduct);
 router.post('/deleteproduct', deleteProduct);
-router.get('/category', getCategory);
-router.get('/subcategory', getSubCategory);
 router.post('/productcategory', getProductwithcategorys);
-router.post('/createcategory', createCategory);
-router.post('/createsubcategory',createSubCategory);
 router.post('/selectproduct', selectProduct);
 router.post('/getrandomproductcategory',getRandomProductCategory);
 router.get('/getrandomproduct',getRandomProducts);
 router.get('/getproductstockmin', getProductwithStockMin);
+
+//Rutas designadas a categorias
+
+const {getCategory,createCategory} = require("../controllers/category.controllers")
+router.get('/category', getCategory);
+router.post('/createcategory', createCategory);
+//Rutas designadas a subcategorias
+
+const {getSubCategory,createSubCategory} = require("../controllers/subcategory.controllers")
+
+router.get('/subcategory', getSubCategory);
+router.post('/createsubcategory',createSubCategory);
 //Rutas designadas a productos defectuosos
 
 const {getDefectiveProduct, createDefectiveProduct} = require('../controllers/defective_product.controllers')
