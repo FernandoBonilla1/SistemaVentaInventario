@@ -60,12 +60,13 @@ router.get('/get-reporte-existencia',reporteExistecia);
 router.post('/get-boleta',boleta);
 
 //Rutas designada para productos deseados
-const {getWantedCart,addProductWantedCart,ModifyWantedCart,deleteProductWantedCart} = require('../controllers/wantedcart.controllers')
+const {getWantedCart,addProductWantedCart,ModifyWantedCart,deleteProductWantedCart,modifystateWantedCart} = require('../controllers/wantedcart.controllers')
 
 router.post('/getwantedcart',getWantedCart);
 router.post('/addproductwantedcart',addProductWantedCart);
 router.post('/modifyproductwantedcart',ModifyWantedCart);
 router.post('/deleteproductwantedcart',deleteProductWantedCart);
+router.post('/modifystatewantedcart',modifystateWantedCart);
 //Rutas designadas a ventas
 
 const {getSale,addSale,addProductToSale,confirmsale,removeProductToSale} = require('../controllers/sales.controllers');

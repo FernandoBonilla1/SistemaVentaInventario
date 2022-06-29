@@ -9,7 +9,7 @@ const getWantedCart = async (req, res) => {
                 msg: "El usuario no existe"
             })
         }
-        const wantedcart = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1', [rut]);
+        const wantedcart = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, users.confirmcart as confirmcart from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1', [rut]);
         if (wantedcart.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos en tu lista de deseados"
@@ -107,9 +107,30 @@ const deleteProductWantedCart = async (req, res) => {
     }
 }
 
+const modifystateWantedCart = async(req, res) => {
+    try{
+        const{rut,confirmcart} = req.body;
+        const user = await connection.query('select * from users where users.rut = $1', [rut])
+        if (user.rows.length === 0) {
+            return res.status(200).json({
+                msg: "El usuario no existe"
+            })
+        }
+        const verifycart = await connection.query('UPDATE users SET confirmcart = $1 WHERE rut = $2',[confirmcart,rut])
+        res.status(200).json({
+            msg: `Se modifico el estado del carrito del usuario con rut: ${rut}`
+        })
+    }catch (error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla usuario"
+        })
+    }
+}
+
 module.exports = {
     getWantedCart,
     addProductWantedCart,
     ModifyWantedCart,
-    deleteProductWantedCart
+    deleteProductWantedCart,
+    modifystateWantedCart
 }
