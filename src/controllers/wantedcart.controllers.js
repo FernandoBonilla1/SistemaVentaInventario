@@ -88,7 +88,13 @@ const deleteProductWantedCart = async (req, res) => {
                 msg: "Debe especificar el producto"
             })
         } else {
-            const product = await connection.query('DELETE FROM wantedcart WHERE rut_user = $1 and id_product = $2', [rut, id_product]);
+            const product1 = await connection.query('select * from wantedcart inner join product on (wantedcart.id_product = product.id) where wantedcart.id_product = $1 and wantedcart.rut_user = $2',[id_product,rut])
+            if(product1.rows.length === 0){
+                return res.status(200).json({
+                    msg: "No existe el producto en la lista"
+                })
+            }
+            const product2 = await connection.query('DELETE FROM wantedcart WHERE rut_user = $1 and id_product = $2', [rut, id_product]);
             res.status(200).json({
                 msg: `Se elimino el producto de la lista de deseados.`
             })
