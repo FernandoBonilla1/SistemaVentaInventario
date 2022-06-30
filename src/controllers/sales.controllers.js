@@ -201,7 +201,6 @@ const confirmsaleWantedCart = async (req, res) => {
         const { id, id_payment_method } = req.body
         
         const sale = await connection.query("UPDATE sale SET id_payment_method = $1 WHERE id = $2", [id_payment_method, id])
-        console.log("aaaaa")
         try {
             const details = await connection.query("Select sale.id as id_sale, sale.id_cliente as rut, details.id_product as id_product, details.amount as purchased_amount, product.amount as product_amount, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) Where sale.id = $1", [id]);
             var price = 0
