@@ -147,15 +147,15 @@ const selectProduct = async (req, res) => {
 const searchProduct = async (req, res) => {
     try {
         const { name } = req.body;
-        if (name == undefined) {
-            return res.status(401).json({
-                msg: "Debe incluir todos los campos."
+        if (name == "") {
+            return res.status(400).json({
+                msg: "Debe escribir el nombre del producto."
             });
         } else {
             nameCapitalize = capitalizarPrimeraLetra(name);
             const products = await connection.query(`SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`);
             if (products.rows.length === 0) {
-                return res.status(401).json({
+                return res.status(200).json({
                     msg: "El producto no existe."
                 });
             }
@@ -174,28 +174,21 @@ const createProduct = async (req, res) => {
     try {
         const { name, year, brand, description, amount, stockmin, value, id_subcategory, id_supplier } = req.body;
         const removed = false;
-        if (name == undefined || year == undefined || brand == undefined || amount == undefined || stockmin == undefined || value == undefined || id_subcategory == undefined || id_supplier == undefined) {
+        if (name == "" || brand == "" || id_subcategory == "" || id_supplier == "" || year == "" || amount == "" || stockmin == "" || value == "") {
             return res.status(400).json({
-                msg: "Debe incluir todos los campos."
+                msg: "El producto debe incluir todos los campos"
             });
         } else {
-            if (name == "" || brand == "" || id_subcategory == "" || id_supplier == "" || year == "" || amount == "" || stockmin == "" || value == "") {
+            if (amount < 0 || stockmin < 0 || value < 0 || year < 0) {
                 return res.status(400).json({
-                    msg: "El producto debe incluir todos los campos"
+                    msg: "No puede ingresar valores negativos."
                 });
             } else {
-                if (amount < 0 || stockmin < 0 || value < 0 || year < 0) {
-                    return res.status(400).json({
-                        msg: "No puede ingresar estos valores."
-                    });
-                } else {
-                    const product = await connection.query('INSERT INTO product(name,year,brand,description,amount,stockmin,value,id_subcategory,id_supplier,removed) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', [name, year, brand, description, amount, stockmin, value, id_subcategory, id_supplier, removed])
-                    res.status(200).json({
-                        msg: `Se logro crear el producto con nombre: ${name}`
-                    });
-                }
+                const product = await connection.query('INSERT INTO product(name,year,brand,description,amount,stockmin,value,id_subcategory,id_supplier,removed) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', [name, year, brand, description, amount, stockmin, value, id_subcategory, id_supplier, removed])
+                res.status(200).json({
+                    msg: `Se logro crear el producto con nombre: ${name}`
+                });
             }
-
         }
     } catch (error) {
         res.status(500).json({
@@ -241,19 +234,20 @@ const changeStock = async (req, res) => {
 const modifyProduct = async (req, res) => {
     try {
         const { id, name, year, brand, description, amount, value, stockmin } = req.body;
-        if (id == undefined || year == undefined || brand == undefined || amount == undefined || stockmin == undefined || value == undefined || name == undefined) {
+        if (id == "" || name == "" || year == "" || brand == "" || amount == "" || value == "" || stockmin == "") {
             return res.status(400).json({
-                msg: "Debe incluir todos los campos."
+                msg: "Debe rellenar los campos."
             });
         } else {
-            if (id == "" || name == "" || year == "" || brand == "" || amount == "" || value == "" || stockmin == "") {
+            if (amount < 0 || stockmin < 0 || value < 0 || year < 0) {
                 return res.status(400).json({
-                    msg: "Debe rellenar los campos."
+                    msg: "No puede ingresar estos valores."
                 })
             } else {
-                if (amount < 0 || stockmin < 0 || value < 0 || year < 0) {
-                    return res.status(400).json({
-                        msg: "No puede ingresar estos valores."
+                const product1 = await connection.query("Select * from product where id = $1",[id])
+                if (product1.rows.length === 0) {
+                    return res.status(200).json({
+                        msg: "El producto no existe"
                     });
                 } else {
                     const product = await connection.query('UPDATE product SET year = $1, brand = $2, description = $3, amount = $4, value = $5, name = $6, stockmin = $7 WHERE id = $8', [year, brand, description, amount, value, name, stockmin, id])
@@ -274,17 +268,18 @@ const modifyProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.body;
-        if (id == undefined) {
-            return res.status(400).json({
-                msg: "Debe incluir todos los campos."
-            });
+        if(id == ""){
+            return res.status(200).json({
+                msg: "Debe especificar el producto"
+            })
         } else {
-            if (id == "") {
-                return res.status(400).json({
-                    msg: "Debe especificar el producto"
-                })
+            const product1 = await connection.query("Select * from product where id = $1",[id])
+            if(product1.rows.length === 0){
+                return res.status(200).json({
+                    msg: "No existe el producto"
+                });
             } else {
-                const product = await connection.query('DELETE FROM product WHERE id = $1', [id]);
+                const product2 = await connection.query('DELETE FROM product WHERE id = $1', [id]);
                 res.status(200).json({
                     msg: `Se elimino el producto con id: ${id}`
                 })
@@ -303,15 +298,16 @@ const deleteProduct = async (req, res) => {
 const changeStatus = async (req, res) => {
     try {
         const { id, removed } = req.body;
-        if (id == undefined || removed == undefined) {
+        if(id == ""){
             return res.status(400).json({
-                msg: "Debe incluir todos los campos."
-            });
+                msg: "Debe especificar el producto para removerlo"
+            })
         } else {
-            if (id == "") {
-                return res.status(400).json({
-                    msg: "Debe especificar el producto para removerlo"
-                })
+            const product1 = await connection.query("Select * from product where id = $1",[id]);
+            if(product1.rows.length === 0){
+                return res.status(200).json({
+                    msg: "El producto no existe"
+                });
             } else {
                 const product = await connection.query('UPDATE product SET removed = $1 WHERE id = $2', [removed, id])
                 res.status(200).json({
@@ -340,5 +336,6 @@ module.exports = {
     selectProduct,
     getRandomProductCategory,
     getRandomProducts,
-    getProductwithStockMin
+    getProductwithStockMin,
+    capitalizarPrimeraLetra
 }

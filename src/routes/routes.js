@@ -48,10 +48,14 @@ router.post('/defectiveproduct', getDefectiveProduct);
 router.post('/adddefectiveproduct', createDefectiveProduct);
 
 //Rutas designadas a proveedores
-const {getSuppliers, createSupplier} = require('../controllers/suppliers.controllers');
+const {getSuppliers, createSupplier, searchSupplier, deleteSupplier, modifysupplier, changeStatusSupplier} = require('../controllers/suppliers.controllers');
 
 router.get('/suppliers', getSuppliers);
 router.post('/addsupplier', createSupplier);
+router.post('/searchsupplier',searchSupplier);
+router.post('/deletesupplier',deleteSupplier);
+router.post('/modifysupplier', modifysupplier);
+router.post('/changestatussupplier',changeStatusSupplier)
 
 //Rutas designadas a reportes
 
