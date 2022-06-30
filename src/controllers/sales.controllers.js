@@ -123,7 +123,8 @@ const confirmsale = async (req, res) => {
                 var update = await connection.query("UPDATE product SET amount = $1 WHERE id = $2", [amount, details.rows[i].id_product])
             }
             res.status(200).json({
-                msg: `Se completo la venta el total a pagar de la venta con id: ${id} es: $${price}`
+                id: id,
+                total: price
             });
         } catch (error) {
             res.status(500).json({
@@ -195,11 +196,46 @@ const addSaleWantedCart = async (req, res) => {
     }
 }
 
+const confirmsaleWantedCart = async (req, res) => {
+    try {
+        const { id, id_payment_method } = req.body
+        
+        const sale = await connection.query("UPDATE sale SET id_payment_method = $1 WHERE id = $2", [id_payment_method, id])
+        console.log("aaaaa")
+        try {
+            const details = await connection.query("Select sale.id as id_sale, sale.id_cliente as rut, details.id_product as id_product, details.amount as purchased_amount, product.amount as product_amount, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) Where sale.id = $1", [id]);
+            var price = 0
+            
+            for (var i = 0; i < details.rows.length; i++) {
+                var amount = details.rows[i].product_amount - details.rows[i].purchased_amount;
+                price = price + details.rows[i].price
+                var update = await connection.query("UPDATE product SET amount = $1 WHERE id = $2", [amount, details.rows[i].id_product])
+            }
+            const rut = details.rows[0].rut
+            const clear = await connection.query(`DELETE FROM wantedcart WHERE rut_user = $1`,[rut])
+            res.status(200).json({
+                id: id,
+                total: price
+            });
+        } catch (error) {
+            res.status(500).json({
+                msg: "No se pudo acceder a la tabla detalles"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla ventas"
+        })
+    }
+}
+
+
 module.exports = {
     getSale,
     addSale,
     addProductToSale,
     confirmsale,
     removeProductToSale,
-    addSaleWantedCart
+    addSaleWantedCart,
+    confirmsaleWantedCart
 }
