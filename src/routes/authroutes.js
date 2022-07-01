@@ -1,6 +1,5 @@
 
 const { Router } = require('express');
-const { rotate } = require('pdfkit');
 const router = Router();
 
 const {register, login, logout, loginFuncionario, registerFuncionario} = require("../controllers/auth.controller");

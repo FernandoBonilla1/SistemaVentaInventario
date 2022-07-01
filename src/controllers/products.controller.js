@@ -5,16 +5,16 @@ function capitalizarPrimeraLetra(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const getProductwithStockMin = async (req, res) =>{
-    try{
+const getProductwithStockMin = async (req, res) => {
+    try {
         const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url, product.stockmin as stockmin from product INNER join subcategory on (product.id_subcategory = subcategory.id) where (product.amount <= product.stockmin) ');
-        if (product.rows.length === 0){
+        if (product.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos con stockmin"
             })
         }
         res.status(200).json(product.rows)
-    } catch(error) {
+    } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
             error
@@ -24,16 +24,16 @@ const getProductwithStockMin = async (req, res) =>{
 
 
 
-const getRandomProducts = async (req, res) =>{
-    try{
+const getRandomProducts = async (req, res) => {
+    try {
         const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) order by random() limit 6');
-        if (product.rows.length === 0){
+        if (product.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos"
             })
         }
         res.status(200).json(product.rows)
-    } catch(error) {
+    } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
             error
@@ -41,17 +41,17 @@ const getRandomProducts = async (req, res) =>{
     }
 }
 
-const getRandomProductCategory = async (req, res) =>{
-    try{
-        const {id_category} = req.body
-        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) where subcategory.id_category = $1 order by random() limit 4',[id_category]);
-        if (product.rows.length === 0){
+const getRandomProductCategory = async (req, res) => {
+    try {
+        const { id_category } = req.body
+        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) where subcategory.id_category = $1 order by random() limit 4', [id_category]);
+        if (product.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos"
             })
         }
         res.status(200).json(product.rows)
-    } catch(error) {
+    } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
             error
@@ -127,8 +127,8 @@ const getProductwithcategorys = async (req, res) => {
 }
 
 const selectProduct = async (req, res) => {
-    try{
-        const {id_product, id_category, id_subcategory} = req.body;
+    try {
+        const { id_product, id_category, id_subcategory } = req.body;
         const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as idcategory, subcategory.id as idsubcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where product.id = $1 and category.id = $2 and subcategory.id = $3', [id_product, id_category, id_subcategory])
         if (products1.rows.length === 0) {
             return res.status(200).json({
@@ -136,7 +136,7 @@ const selectProduct = async (req, res) => {
             })
         }
         return res.status(200).json(products1.rows);
-    } catch(error){
+    } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
             error
@@ -147,20 +147,14 @@ const selectProduct = async (req, res) => {
 const searchProduct = async (req, res) => {
     try {
         const { name } = req.body;
-        if (name == "") {
-            return res.status(400).json({
-                msg: "Debe escribir el nombre del producto."
+        nameCapitalize = capitalizarPrimeraLetra(name);
+        const products = await connection.query(`SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`);
+        if (products.rows.length === 0) {
+            return res.status(200).json({
+                msg: "El producto no existe."
             });
-        } else {
-            nameCapitalize = capitalizarPrimeraLetra(name);
-            const products = await connection.query(`SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`);
-            if (products.rows.length === 0) {
-                return res.status(200).json({
-                    msg: "El producto no existe."
-                });
-            }
-            res.status(200).json(products.rows);
         }
+        res.status(200).json(products.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla producto",
@@ -244,7 +238,7 @@ const modifyProduct = async (req, res) => {
                     msg: "No puede ingresar estos valores."
                 })
             } else {
-                const product1 = await connection.query("Select * from product where id = $1",[id])
+                const product1 = await connection.query("Select * from product where id = $1", [id])
                 if (product1.rows.length === 0) {
                     return res.status(200).json({
                         msg: "El producto no existe"
@@ -268,13 +262,13 @@ const modifyProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.body;
-        if(id == ""){
+        if (id == "") {
             return res.status(200).json({
                 msg: "Debe especificar el producto"
             })
         } else {
-            const product1 = await connection.query("Select * from product where id = $1",[id])
-            if(product1.rows.length === 0){
+            const product1 = await connection.query("Select * from product where id = $1", [id])
+            if (product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "No existe el producto"
                 });
@@ -298,13 +292,13 @@ const deleteProduct = async (req, res) => {
 const changeStatus = async (req, res) => {
     try {
         const { id, removed } = req.body;
-        if(id == ""){
+        if (id == "") {
             return res.status(400).json({
                 msg: "Debe especificar el producto para removerlo"
             })
         } else {
-            const product1 = await connection.query("Select * from product where id = $1",[id]);
-            if(product1.rows.length === 0){
+            const product1 = await connection.query("Select * from product where id = $1", [id]);
+            if (product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El producto no existe"
                 });

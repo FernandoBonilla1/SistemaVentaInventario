@@ -43,20 +43,14 @@ const createCategory = async (req, res) => {
 const searchcategory = async (req, res) => {
     try {
         const { name } = req.body;
-        if (name == "") {
-            return res.status(400).json({
-                msg: "Debe escribir el nombre de la categoria"
+        nameCapitalize = capitalizar.capitalizarPrimeraLetra(name)
+        const categories = await connection.query(`SELECT * FROM category where name LIKE '${nameCapitalize}%'`);
+        if (categories.rows.length === 0) {
+            return res.status(200).json({
+                msg: "No hay categorias"
             });
-        } else {
-            nameCapitalize = capitalizar.capitalizarPrimeraLetra(name)
-            const categories = await connection.query(`SELECT * FROM category where name LIKE '${nameCapitalize}%'`);
-            if (categories.rows.length === 0) {
-                return res.status(200).json({
-                    msg: "No hay categorias"
-                });
-            }
-            res.status(200).json(categories.rows);
         }
+        res.status(200).json(categories.rows);
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla category",
@@ -67,7 +61,7 @@ const searchcategory = async (req, res) => {
 
 const modifycategory = async (req, res) => {
     try {
-        const { id, name, description} = req.body;
+        const { id, name, description } = req.body;
         if (id == "" || name == "" || description == "") {
             return res.status(400).json({
                 msg: "Debe rellenar los campos."
@@ -79,7 +73,7 @@ const modifycategory = async (req, res) => {
                     msg: "La categoria no existe"
                 });
             } else {
-                const categories1 = await connection.query('UPDATE category SET name = $1, description = $2 WHERE id = $3', [name, description,id])
+                const categories1 = await connection.query('UPDATE category SET name = $1, description = $2 WHERE id = $3', [name, description, id])
                 res.status(200).json({
                     msg: `Se ha actualizo la categoria`
                 });
@@ -96,15 +90,15 @@ const modifycategory = async (req, res) => {
 const changeStatusCategory = async (req, res) => {
     try {
         const { id, removed } = req.body;
-        if(id == ""){
+        if (id == "") {
             return res.status(400).json({
                 msg: "Debe especificar el id de la categoria para removerlo"
             })
         } else {
-            const categories = await connection.query("Select * from category where id = $1",[id]);
-            if(categories.rows.length === 0){
+            const categories = await connection.query("Select * from category where id = $1", [id]);
+            if (categories.rows.length === 0) {
                 return res.status(200).json({
-                    msg: "El proveedor no existe"
+                    msg: "La categoria no existe"
                 });
             } else {
                 const categories1 = await connection.query('UPDATE category SET removed = $1 WHERE id = $2', [removed, id])
@@ -115,7 +109,7 @@ const changeStatusCategory = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({
-            msg: "No se pudo acceder a la tabla producto",
+            msg: "No se pudo acceder a la tabla category",
             error
         })
     }

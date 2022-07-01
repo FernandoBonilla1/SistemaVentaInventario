@@ -55,6 +55,12 @@ const addSale = async (req, res) => {
         const cant = await connection.query('SELECT count(*) from sale')
         const id = `${generateRandomString(7) + cant.rows[0].count}`
         const id_sale = id.trim()
+        const client = await connection.query("select * from users where rut = $1",[id_cliente]);
+        if(client.rows.length === 0){
+            return res.status(400).json({
+                msg: "El cliente no existe"
+            })
+        }
         const sale = await connection.query('INSERT INTO sale(id,id_cliente,id_salesman,date) VALUES($1,$2,$3,$4)', [id_sale, id_cliente, id_salesman, fecha_actual]);
         res.status(200).json({
             id: id_sale

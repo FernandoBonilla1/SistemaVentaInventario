@@ -90,7 +90,7 @@ const deleteSupplier = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({
-            msg: "No se pudo acceder a la tabla producto",
+            msg: "No se pudo acceder a la tabla supplier",
             error
         });
     }
@@ -118,7 +118,7 @@ const modifysupplier = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({
-            msg: "No se pudo acceder a la tabla proveedor",
+            msg: "No se pudo acceder a la tabla supplier",
             error
         })
     }
@@ -147,7 +147,7 @@ const changeStatusSupplier = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({
-            msg: "No se pudo acceder a la tabla producto",
+            msg: "No se pudo acceder a la tabla supplier",
             error
         })
     }

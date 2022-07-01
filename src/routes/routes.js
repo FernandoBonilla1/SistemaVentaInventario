@@ -4,13 +4,13 @@ const router = Router();
 const {authenticateToken} = require("../middleware/authorization")
 
 //Rutas designadas a los usuarios
-const {getUsers, createUsers, getUserById, deleteUser, updateUser} = require('../controllers/user.controllers');
+const {getUsers, createUsers, getUserById, deleteUser, updateUser,searchUser} = require('../controllers/user.controllers');
 
 router.get('/users', getUsers);
-router.post('/searchuser', getUserById);
 router.post('/createuser', createUsers);
 router.put('/updateuser', updateUser);
 router.delete('/deleteuser', deleteUser);
+router.post('/searchuser',searchUser);
 
 //Rutas designadas a los productos
 
@@ -39,10 +39,13 @@ router.post('/modifycategory', modifycategory);
 router.post('/changestatuscategory', changeStatusCategory)
 //Rutas designadas a subcategorias
 
-const {getSubCategory,createSubCategory} = require("../controllers/subcategory.controllers")
+const {getSubCategory,createSubCategory, searchsubcategory, modifysubcategory, changeStatussubCategory} = require("../controllers/subcategory.controllers")
 
 router.get('/subcategory', getSubCategory);
 router.post('/createsubcategory',createSubCategory);
+router.post('/searchsubcategory', searchsubcategory);
+router.post('/modifysubcategory', modifysubcategory);
+router.post('/changestatussubcategory', changeStatussubCategory);
 
 //Rutas designadas a productos defectuosos
 
