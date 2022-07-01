@@ -31,15 +31,19 @@ router.get('/getproductstockmin', getProductwithStockMin);
 
 //Rutas designadas a categorias
 
-const {getCategory,createCategory} = require("../controllers/category.controllers")
+const {getCategory,createCategory, searchcategory, modifycategory, changeStatusCategory} = require("../controllers/category.controllers")
 router.get('/category', getCategory);
 router.post('/createcategory', createCategory);
+router.post('/searchcategory',searchcategory);
+router.post('/modifycategory', modifycategory);
+router.post('/changestatuscategory', changeStatusCategory)
 //Rutas designadas a subcategorias
 
 const {getSubCategory,createSubCategory} = require("../controllers/subcategory.controllers")
 
 router.get('/subcategory', getSubCategory);
 router.post('/createsubcategory',createSubCategory);
+
 //Rutas designadas a productos defectuosos
 
 const {getDefectiveProduct, createDefectiveProduct} = require('../controllers/defective_product.controllers')
@@ -73,7 +77,7 @@ router.post('/deleteproductwantedcart',deleteProductWantedCart);
 router.post('/modifystatewantedcart',modifystateWantedCart);
 //Rutas designadas a ventas
 
-const {getSale,addSale,addProductToSale,confirmsale,removeProductToSale, addSaleWantedCart, confirmsaleWantedCart} = require('../controllers/sales.controllers');
+const {getSale,addSale,addProductToSale,confirmsale,removeProductToSale, addSaleWantedCart, confirmsaleWantedCart, getpayment_method} = require('../controllers/sales.controllers');
 
 router.post('/sales',getSale);
 router.post('/addsale',addSale);
@@ -82,6 +86,7 @@ router.post('/removeproductsale',removeProductToSale);
 router.post('/confirmansale',confirmsale);
 router.post('/addsalewantedcart',addSaleWantedCart);
 router.post('/confirmsalewantedcart',confirmsaleWantedCart);
+router.get('/getpaymentmethod', getpayment_method);
 
 
 

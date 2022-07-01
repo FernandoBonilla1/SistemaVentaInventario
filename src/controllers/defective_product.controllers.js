@@ -19,26 +19,28 @@ const getDefectiveProduct = async (req, res) => {
 
 }
 
-
 const createDefectiveProduct = async (req, res) => {
     try {
         const { id_sale, id_product, description} = req.body;
-        if (id_sale == undefined || id_product == undefined) {
+        if (id_sale == "" || id_product == "" || description == "") {
             return res.status(400).json({
-                msg: "Debe especificar los campos."
+                msg: "Debe rellenar los campos."
             })
-        } else {
-            if (id_sale == "" || id_product == "") {
-                return res.status(400).json({
-                    msg: "Debe rellenar los campos."
+        }
+        else {
+            const sale = await connection.query("select * from sale");
+            const product = await connection.query("Select * from product where id = $1", [id_product]);
+            if(sale.rows.length === 0 || product.rows.length === 0){
+                return res.status(200).json({
+                    msg: "No existe la venta o el producto."
                 })
-            }
-            else {
+            }else {
                 const defective_products = await connection.query('INSERT INTO defective_product(id_sale,id_product,desciption) VALUES($1,$2,$3)', [id_sale, id_product, description])
                 res.status(200).json({
                     msg: `Se logro crear el producto defectuoso con id: ${id}`
                 });
             }
+            
         }
     } catch (error) {
         res.status(500).json({

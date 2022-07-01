@@ -7,6 +7,10 @@ const formatDate = (date) => {
 }
 
 
+const reporte_productos_defectuosos = async (req, res) => {
+    
+}
+
 const boleta = async (req, res) => {
     
     try {

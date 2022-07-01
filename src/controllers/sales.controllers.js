@@ -11,6 +11,23 @@ const generateRandomString = (num) => {
     return result1;
 }
 
+const getpayment_method = async (req, res) => {
+    try {
+        const payment_method = await connection.query('SELECT * FROM payment_method');
+        if (payment_method.rows.length === 0) {
+            return res.status(200).json({
+                msg: "No hay metodos de pago"
+            })
+        }
+        res.status(200).json(payment_method.rows);
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla subcategory",
+            error
+        })
+    }
+}
+
 const getSale = async (req, res) => {
     try {
         const { id } = req.body
@@ -236,5 +253,6 @@ module.exports = {
     confirmsale,
     removeProductToSale,
     addSaleWantedCart,
-    confirmsaleWantedCart
+    confirmsaleWantedCart,
+    getpayment_method
 }
