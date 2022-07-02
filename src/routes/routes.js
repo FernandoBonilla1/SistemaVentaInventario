@@ -1,10 +1,10 @@
 const { Router } = require('express');
 const router = Router();
-
+const fileUpload = require("express-fileupload");
 const {authenticateToken} = require("../middleware/authorization")
 
 //Rutas designadas a los usuarios
-const {getUsers, createUsers, getUserById, deleteUser, updateUser,searchUser} = require('../controllers/user.controllers');
+const {getUsers, createUsers, deleteUser, updateUser,searchUser} = require('../controllers/user.controllers');
 
 router.get('/users', getUsers);
 router.post('/createuser', createUsers);
@@ -91,6 +91,9 @@ router.post('/addsalewantedcart',addSaleWantedCart);
 router.post('/confirmsalewantedcart',confirmsaleWantedCart);
 router.get('/getpaymentmethod', getpayment_method);
 
+//Rutas Imagenes
 
-
+const {getImageProductBase64, uploadImageProduct} = require("../controllers/uploadimages.controller")
+router.post('/getimageproduct',getImageProductBase64);
+router.post('/uploadimageproduct',fileUpload(), uploadImageProduct);
 module.exports = router;

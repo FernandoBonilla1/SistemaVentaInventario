@@ -48,9 +48,7 @@ const createDefectiveProduct = async (req, res) => {
             error
         })
     }
-
 }
-
 module.exports = {
     getDefectiveProduct,
     createDefectiveProduct
