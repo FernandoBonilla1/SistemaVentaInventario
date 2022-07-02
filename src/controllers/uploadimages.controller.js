@@ -5,15 +5,56 @@ const fs = require("fs");
 const uploadImageProduct = async (req, res) => {
     try {
         let { base64Data, id_product } = req.body
-        base64Data = base64Data.replace("data:image/jpg;base64,", "");
-
-        fs.writeFileSync(`upload/products/product${id_product}.png`, base64Data, 'base64');
-        res.status(200).json({
-            msg: base64Data
-        })
+        if (base64Data == "") {
+            res.status(400).json({
+                msg: "Debe enviar el string en base 64"
+            })
+        } else {
+            base64Data = base64Data.replace("data:image/png;base64,", "");
+            const product = await connection.query("select * from product where id = $1",[id_product]);
+            if(product.rows.length === 0){
+                res.status(400).json({
+                    msg: "El producto no existe"
+                })
+            } else {
+                fs.writeFileSync(`src/upload/category/category${id_product}.png`, base64Data, 'base64');
+                res.status(200).json({
+                    msg: "Se subio la imagen"
+                })
+            }
+        }
     } catch (error) {
         res.status(500).json({
-            msg: "No se pudo crear la imagen en base 64",
+            msg: "No se pudo subir la imagen",
+            error
+        })
+    }
+}
+
+const uploadImageCategory = async (req, res) => {
+    try {
+        let { base64Data, id_category } = req.body
+        if (base64Data == "") {
+            res.status(400).json({
+                msg: "Debe enviar el string en base 64"
+            })
+        } else {
+            base64Data = base64Data.replace("data:image/png;base64,", "");
+            const category = await connection.query("select * from category where id = $1",[id_category]);
+            if(category.rows.length === 0){
+                res.status(400).json({
+                    msg: "La categoria no existe"
+                })
+            } else {
+                fs.writeFileSync(`src/upload/category/category${id_category}.png`, base64Data, 'base64');
+                res.status(200).json({
+                    msg: "Se subio la imagen"
+                })
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo subir la imagen",
             error
         })
     }
@@ -30,9 +71,9 @@ const getImageProductBase64 = async (req, res) => {
                 msg: "No existe el producto"
             })
         } else {
-            let path = `upload/products/product${id_product}.png`
+            let path = `src/upload/products/product${id_product}.png`
             const data = fs.readFileSync(path);
-            const image = "data:image/jpg;base64," + data.toString('base64');
+            const image = "data:image/png;base64," + data.toString('base64');
             return res.status(200).json({
                 foto: image
             })
@@ -45,7 +86,49 @@ const getImageProductBase64 = async (req, res) => {
     }
 }
 
+const changeurlProduct = async (req, res) => {
+    try {
+        const product = await connection.query("select * from product")
+        for (var i = 0; i < product.rows.length; i++) {
+            let path = `src/upload/products/product${product.rows[i].id}.png`
+            const data = fs.readFileSync(path);
+            const image = "data:image/png;base64," + data.toString('base64');
+            var product1 = await connection.query("UPDATE product set url = $1 where id = $2", [image, product.rows[i].id])
+        }
+        res.status(200).json({
+            msg: "Se actualizaron la url"
+        })
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo crear la imagen en base 64",
+            error
+        })
+    }
+}
+
+const changeurlCategory = async (req, res) => {
+    try {
+        const category = await connection.query("select * from category")
+        for (var i = 0; i < category.rows.length; i++) {
+            let path = `src/upload/category/category${category.rows[i].id}.png`
+            const data = fs.readFileSync(path);
+            const image = "data:image/png;base64," + data.toString('base64');
+            var category1 = await connection.query("UPDATE category set url = $1 where id = $2", [image, category.rows[i].id])
+        }
+        res.status(200).json({
+            msg: "Se actualizaron la url"
+        })
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo crear la imagen en base 64",
+            error
+        })
+    }
+}
+
 module.exports = {
     getImageProductBase64,
-    uploadImageProduct
+    uploadImageProduct,
+    changeurlProduct,
+    changeurlCategory
 }

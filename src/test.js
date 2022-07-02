@@ -9,7 +9,20 @@ const generateRandomString = (num) => {
 
     return result1;
 }
-
+const { exec } = require("child_process");
+const getPath = () =>{
+    exec("echo %cd%", (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+    });
+}
 /*
 functionQueries.updateCurriculum = (req, res, next) => {
     let query = `INSERT INTO curriculum (id, nombres, apellidos, fecha_nac, comuna, ciudad, celular, correo, otros) 
