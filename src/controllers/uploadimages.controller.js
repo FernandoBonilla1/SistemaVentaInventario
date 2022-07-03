@@ -6,14 +6,14 @@ const uploadImageProduct = async (req, res) => {
     try {
         let { base64Data, id_product } = req.body
         if (base64Data == "") {
-            res.status(400).json({
+            return res.status(400).json({
                 msg: "Debe enviar el string en base 64"
             })
         } else {
             base64Data = base64Data.replace("data:image/png;base64,", "");
             const product = await connection.query("select * from product where id = $1",[id_product]);
             if(product.rows.length === 0){
-                res.status(400).json({
+                return res.status(400).json({
                     msg: "El producto no existe"
                 })
             } else {
@@ -43,14 +43,14 @@ const uploadImageCategory = async (req, res) => {
     try {
         let { base64Data, id_category } = req.body
         if (base64Data == "") {
-            res.status(400).json({
+            return res.status(400).json({
                 msg: "Debe enviar el string en base 64"
             })
         } else {
             base64Data = base64Data.replace("data:image/png;base64,", "");
             const category = await connection.query("select * from category where id = $1",[id_category]);
             if(category.rows.length === 0){
-                res.status(400).json({
+                return res.status(400).json({
                     msg: "La categoria no existe"
                 })
             } else {
