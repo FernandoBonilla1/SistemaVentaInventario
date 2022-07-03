@@ -93,9 +93,11 @@ router.get('/getpaymentmethod', getpayment_method);
 
 //Rutas Imagenes
 
-const {getImageProductBase64, uploadImageProduct, changeurlProduct, changeurlCategory} = require("../controllers/uploadimages.controller")
+const {getImageProductBase64, uploadImageProduct, changeurlProduct, changeurlCategory, uploadImageCategory} = require("../controllers/uploadimages.controller")
 router.post('/getimageproduct',getImageProductBase64);
 router.post('/uploadimageproduct',fileUpload(), uploadImageProduct);
+router.get('/uploadimagecategory',uploadImageCategory);
 router.get('/changeurlproduct',changeurlProduct);
 router.get('/changeurlcategory',changeurlCategory);
+
 module.exports = router;

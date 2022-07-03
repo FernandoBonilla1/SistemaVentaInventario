@@ -18,9 +18,17 @@ const uploadImageProduct = async (req, res) => {
                 })
             } else {
                 fs.writeFileSync(`src/upload/category/category${id_product}.png`, base64Data, 'base64');
-                res.status(200).json({
-                    msg: "Se subio la imagen"
-                })
+                try{
+                    var product1 = await connection.query("UPDATE product set url = $1 where id = $2", [base64Data, id_product])
+                    res.status(200).json({
+                        msg: "Se subio la imagen"
+                    })
+                }catch(error){
+                    res.status(500).json({
+                        msg: "No se pudo subir el string base 64 a la columna url",
+                        error
+                    })
+                }
             }
         }
     } catch (error) {
@@ -47,9 +55,17 @@ const uploadImageCategory = async (req, res) => {
                 })
             } else {
                 fs.writeFileSync(`src/upload/category/category${id_category}.png`, base64Data, 'base64');
-                res.status(200).json({
-                    msg: "Se subio la imagen"
-                })
+                try{
+                    var category1 = await connection.query("UPDATE category set url = $1 where id = $2", [base64Data, id_category])
+                    res.status(200).json({
+                        msg: "Se subio la imagen"
+                    })
+                }catch(error){
+                    res.status(500).json({
+                        msg: "No se pudo subir el string base 64 a la columna url",
+                        error
+                    })
+                }
             }
         }
     } catch (error) {
@@ -130,5 +146,6 @@ module.exports = {
     getImageProductBase64,
     uploadImageProduct,
     changeurlProduct,
-    changeurlCategory
+    changeurlCategory,
+    uploadImageCategory
 }
