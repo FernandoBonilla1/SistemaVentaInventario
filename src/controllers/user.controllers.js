@@ -5,7 +5,7 @@ const userFunction = {};
 
 userFunction.getUsers = async (req, res) => {
     try {
-        const users = await connection.query('SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city from users');
+        const users = await connection.query('SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city, users.role from users');
         if (users.rows.length === 0) {
             return res.status(400).json({
                 msg: "No hay usuarios"
@@ -38,7 +38,7 @@ userFunction.updateUser = async (req, res) => {
 userFunction.searchUser = async (req, res) => {
     try {
         const { rut } = req.body;
-        const users = await connection.query(`SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city from users WHERE rut = $1 `, [rut]);
+        const users = await connection.query(`SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city, users.role from users WHERE rut = $1 `, [rut]);
         if (users.rows.length === 0) {
             return res.status(200).json({
                 msg: "El rut no coincide."
