@@ -1,6 +1,8 @@
 const connection = require('../config/db');
-const capitalizar = require("./products.controller")
-const getSuppliers = async (req, res) => {
+const functions = require('../helpers/functionshelper')
+const supplierFunctions = {}
+
+supplierFunctions.getSuppliers = async (req, res) => {
     try {
         const suppliers = await connection.query('SELECT * FROM supplier');
         res.json(suppliers.rows);
@@ -13,7 +15,7 @@ const getSuppliers = async (req, res) => {
 
 }
 
-const createSupplier = async (req, res) => {
+supplierFunctions.createSupplier = async (req, res) => {
     try {
         const { name, description, phone, address, email } = req.body;
         const removed = false;
@@ -42,7 +44,7 @@ const createSupplier = async (req, res) => {
     }
 }
 
-const searchSupplier = async (req, res) => {
+supplierFunctions.searchSupplier = async (req, res) => {
     try {
         const { name } = req.body;
         if (name == "") {
@@ -50,7 +52,7 @@ const searchSupplier = async (req, res) => {
                 msg: "Debe escribir el nombre del proveedor"
             });
         } else {
-            nameCapitalize = capitalizar.capitalizarPrimeraLetra(name)
+            nameCapitalize = functions.capitalizarPrimeraLetra(name)
             const suppliers = await connection.query(`SELECT * FROM supplier where name LIKE '${nameCapitalize}%'`);
             if (suppliers.rows.length === 0) {
                 return res.status(401).json({
@@ -68,7 +70,7 @@ const searchSupplier = async (req, res) => {
 
 }
 
-const deleteSupplier = async (req, res) => {
+supplierFunctions.deleteSupplier = async (req, res) => {
     try {
         const { id } = req.body;
         if (id == "") {
@@ -96,7 +98,7 @@ const deleteSupplier = async (req, res) => {
     }
 }
 
-const modifysupplier = async (req, res) => {
+supplierFunctions.modifysupplier = async (req, res) => {
     try {
         const { id, name, description, phone, address, email } = req.body;
         if (id == "" || name == "" || phone == "" || address == "" || email == "") {
@@ -125,7 +127,7 @@ const modifysupplier = async (req, res) => {
 }
 
 
-const changeStatusSupplier = async (req, res) => {
+supplierFunctions.changeStatusSupplier = async (req, res) => {
     try {
         const { id, removed } = req.body;
         if(id == ""){
@@ -154,11 +156,4 @@ const changeStatusSupplier = async (req, res) => {
 }
 
 
-module.exports = {
-    getSuppliers,
-    createSupplier,
-    searchSupplier,
-    deleteSupplier,
-    modifysupplier,
-    changeStatusSupplier
-}
+module.exports = supplierFunctions

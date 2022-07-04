@@ -1,7 +1,8 @@
 const connection = require('../config/db');
-const capitalizar = require("./products.controller")
+const functions = require('../helpers/functionshelper')
+const categoryFunctions = {}
 
-const getCategory = async (req, res) => {
+categoryFunctions.getCategory = async (req, res) => {
     try {
         const category = await connection.query('SELECT * FROM category');
         if (category.rows.length === 0) {
@@ -18,7 +19,7 @@ const getCategory = async (req, res) => {
     }
 }
 
-const createCategory = async (req, res) => {
+categoryFunctions.createCategory = async (req, res) => {
     try {
         const { name, description } = req.body;
         const removed = false;
@@ -40,10 +41,10 @@ const createCategory = async (req, res) => {
     }
 }
 
-const searchcategory = async (req, res) => {
+categoryFunctions.searchcategory = async (req, res) => {
     try {
         const { name } = req.body;
-        nameCapitalize = capitalizar.capitalizarPrimeraLetra(name)
+        nameCapitalize = name.toUpperCase()
         const categories = await connection.query(`SELECT * FROM category where name LIKE '${nameCapitalize}%'`);
         if (categories.rows.length === 0) {
             return res.status(200).json({
@@ -59,7 +60,7 @@ const searchcategory = async (req, res) => {
     }
 }
 
-const modifycategory = async (req, res) => {
+categoryFunctions.modifycategory = async (req, res) => {
     try {
         const { id, name, description } = req.body;
         if (id == "" || name == "" || description == "") {
@@ -87,7 +88,7 @@ const modifycategory = async (req, res) => {
     }
 }
 
-const changeStatusCategory = async (req, res) => {
+categoryFunctions.changeStatusCategory = async (req, res) => {
     try {
         const { id, removed } = req.body;
         if (id == "") {
@@ -115,10 +116,4 @@ const changeStatusCategory = async (req, res) => {
     }
 }
 
-module.exports = {
-    getCategory,
-    createCategory,
-    searchcategory,
-    modifycategory,
-    changeStatusCategory
-}
+module.exports = categoryFunctions

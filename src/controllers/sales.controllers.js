@@ -1,17 +1,8 @@
 const connection = require('../config/db');
+const functions = require('../helpers/functionshelper');
+const salesFunctions = {}
 
-const generateRandomString = (num) => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result1 = ' ';
-    const charactersLength = characters.length;
-    for (let i = 0; i < num; i++) {
-        result1 += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-
-    return result1;
-}
-
-const getpayment_method = async (req, res) => {
+salesFunctions.getpayment_method = async (req, res) => {
     try {
         const payment_method = await connection.query('SELECT * FROM payment_method');
         if (payment_method.rows.length === 0) {
@@ -28,7 +19,7 @@ const getpayment_method = async (req, res) => {
     }
 }
 
-const getSale = async (req, res) => {
+salesFunctions.getSale = async (req, res) => {
     try {
         const { id } = req.body
         const sales = await connection.query('Select sale.id as id_sale, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1', [id]);
@@ -46,14 +37,12 @@ const getSale = async (req, res) => {
     }
 }
 
-const addSale = async (req, res) => {
+salesFunctions.addSale = async (req, res) => {
     try {
         const { id_cliente, id_salesman } = req.body;
-        const date = Date.now();
-        const hoy = new Date(date);
-        const fecha_actual = hoy.toLocaleDateString();
+        const fecha_actual = functions.getCurrentDate();
         const cant = await connection.query('SELECT count(*) from sale')
-        const id = `${generateRandomString(7) + cant.rows[0].count}`
+        const id = `${functions.generateRandomString(7) + cant.rows[0].count}`
         const id_sale = id.trim()
         const client = await connection.query("select * from users where rut = $1",[id_cliente]);
         if(client.rows.length === 0){
@@ -72,7 +61,7 @@ const addSale = async (req, res) => {
     }
 }
 
-const removeProductToSale = async (req, res) => {
+salesFunctions.removeProductToSale = async (req, res) => {
     try {
         const { id, id_product } = req.body;
         if (id == "") {
@@ -99,7 +88,7 @@ const removeProductToSale = async (req, res) => {
     }
 }
 
-const addProductToSale = async (req, res) => {
+salesFunctions.addProductToSale = async (req, res) => {
     try {
         const { id, id_product, amount } = req.body
         if (amount < 0) {
@@ -133,7 +122,7 @@ const addProductToSale = async (req, res) => {
     }
 }
 
-const confirmsale = async (req, res) => {
+salesFunctions.confirmsale = async (req, res) => {
     try {
         const { id, id_payment_method } = req.body
         const sale = await connection.query("UPDATE sale SET id_payment_method = $1 WHERE id = $2", [id_payment_method, id])
@@ -162,7 +151,7 @@ const confirmsale = async (req, res) => {
 }
 
 
-const addSaleWantedCart = async (req, res) => {
+salesFunctions.addSaleWantedCart = async (req, res) => {
     try {
         const { rut, id_salesman } = req.body;
         const user = await connection.query('select * from users where users.rut = $1', [rut])
@@ -184,11 +173,9 @@ const addSaleWantedCart = async (req, res) => {
             }
             const wantedcart2 = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1 and wantedcart.amount > product.amount', [rut])
             if (wantedcart2.rows.length === 0) {
-                const date = Date.now();
-                const hoy = new Date(date);
-                const fecha_actual = hoy.toLocaleDateString();
+                const fecha_actual = functions.getCurrentDate();
                 const cant = await connection.query('SELECT count(*) from sale')
-                const id = `${generateRandomString(7) + cant.rows[0].count}`
+                const id = `${functions.generateRandomString(7) + cant.rows[0].count}`
                 const id_sale = id.trim()
                 const sale = await connection.query('INSERT INTO sale(id,id_cliente,id_salesman,date) VALUES($1,$2,$3,$4)', [id_sale, rut, id_salesman, fecha_actual]);
                 try {
@@ -219,7 +206,7 @@ const addSaleWantedCart = async (req, res) => {
     }
 }
 
-const confirmsaleWantedCart = async (req, res) => {
+salesFunctions.confirmsaleWantedCart = async (req, res) => {
     try {
         const { id, id_payment_method } = req.body
         
@@ -251,14 +238,4 @@ const confirmsaleWantedCart = async (req, res) => {
     }
 }
 
-
-module.exports = {
-    getSale,
-    addSale,
-    addProductToSale,
-    confirmsale,
-    removeProductToSale,
-    addSaleWantedCart,
-    confirmsaleWantedCart,
-    getpayment_method
-}
+module.exports = salesFunctions

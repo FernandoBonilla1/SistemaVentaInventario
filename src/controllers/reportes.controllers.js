@@ -1,17 +1,84 @@
 const connection = require('../config/db');
 const PDF = require('pdfkit-construct');
+const functions = require('../helpers/functionshelper');
+const reportFunctions = {}
 
-const formatDate = (date) => {
-    let formatted_date = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
-    return formatted_date;
+reportFunctions.reporte_productos_defectuosos = async (req, res) => {
+    try {
+        const doc = new PDF({
+            size: 'A4',
+            margins: { top: 10, left: 10, right: 10, bottom: 10 },
+            bufferPages: true
+        });
+
+        const filename = `Reporte de productos defectuosos ${Date.now()}.pdf`;
+
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-disposition': `attachment;filename=${filename}`
+        });
+        doc.on('data', (data) => { stream.write(data) });
+        doc.on('end', () => { stream.end() });
+
+        const defective_products = await connection.query('Select defective_product.id, sale.id as idventa, sale.date as fecha, product.id as idproducto, product.name as nombreproducto, defective_product.descripcion, defective_product.amount as amount from defective_product inner join sale on (sale.id = defective_product.id_sale) inner join product on (defective_product.id_product = product.id)')
+        const registros = defective_products.rows.map((defective_product) => {
+            const registro = {
+                id: defective_product.id,
+                idventa: defective_product.idventa,
+                id_product: defective_product.idproducto,
+                nombreProducto: defective_product.nombreproducto,
+                descripcion: defective_product.descripcion,
+                amount: defective_product.amount
+            }
+            return registro
+        })
+
+        doc.setDocumentHeader({ height: '10' }, () => {
+            doc.fontSize(18).text('Reporte de productos defectuosos\n', {
+                align: 'center'
+            });
+
+            doc.fontSize(12);
+
+            doc.text('EMPRESA: MACACO', {
+                marginLeft: 150,
+                align: 'left'
+            })
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
+                marginLeft: 100,
+                align: 'left'
+            })
+
+        })
+
+        doc.addTable([
+            { key: 'id', label: 'ID', align: 'left'},
+            { key: 'idventa', label: 'Venta', align: 'left' },
+            { key: 'id_product', label: 'ID P', align: 'left' },
+            { key: 'nombreProducto', label: 'Nombre producto', align: 'left' },
+            { key: 'descripcion', label: "Descripcion", align: 'left' },
+            { key: 'amount', label: "Cantidad", align: 'left'}
+        ], registros, {
+            border: { size: 0.1, color: '#cdcdcd' },
+            width: "fill_body",
+            striped: false,
+            stripedColors: ["#f6f6f6", "#d6c4dd"],
+            cellsPadding: 10,
+            marginLeft: 10,
+            marginRight: 10,
+            headAlign: 'left'
+        })
+        doc.render();
+        doc.end();
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo crear el documento",
+            error
+        })
+    }
 }
 
-
-const reporte_productos_defectuosos = async (req, res) => {
-    
-}
-
-const boleta = async (req, res) => {
+reportFunctions.boleta = async (req, res) => {
     
     try {
         const {id} = req.body;
@@ -48,7 +115,6 @@ const boleta = async (req, res) => {
             return registro
         })
 
-        var date = new Date();
         doc.setDocumentHeader({ height: '12' }, () => {
             doc.fontSize(18).text('BOLETA\n', {
                 align: 'center'
@@ -72,7 +138,7 @@ const boleta = async (req, res) => {
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE VENTA: ${formatDate(date)}`, {
+            doc.text(`FECHA DE VENTA: ${functions.getCurrentDate()}`, {
                 marginLeft: 150,
                 margins: 200,
                 align: 'left'
@@ -112,7 +178,7 @@ const boleta = async (req, res) => {
     
 }
 
-const reporteExistecia = async (req, res) => {
+reportFunctions.reporteExistecia = async (req, res) => {
     try {
         const doc = new PDF({
             size: 'A4',
@@ -142,7 +208,6 @@ const reporteExistecia = async (req, res) => {
             return registro
         })
 
-        var date = new Date();
         doc.setDocumentHeader({ height: '10' }, () => {
             doc.fontSize(18).text('Reporte Existencias\n', {
                 align: 'center'
@@ -154,7 +219,7 @@ const reporteExistecia = async (req, res) => {
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE REPORTE: ${formatDate(date)}`, {
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
                 marginLeft: 100,
                 align: 'left'
             })
@@ -191,7 +256,4 @@ const reporteExistecia = async (req, res) => {
 
 }
 
-module.exports = {
-    reporteExistecia,
-    boleta
-}
+module.exports = reportFunctions

@@ -1,8 +1,9 @@
 const connection = require('../config/db');
 const fs = require("fs");
 
+const uploadImageFunction = {}
 
-const uploadImageProduct = async (req, res) => {
+uploadImageFunction.uploadImageProduct = async (req, res) => {
     try {
         let { base64Data, id_product } = req.body
         if (base64Data == "") {
@@ -39,7 +40,7 @@ const uploadImageProduct = async (req, res) => {
     }
 }
 
-const uploadImageCategory = async (req, res) => {
+uploadImageFunction.uploadImageCategory = async (req, res) => {
     try {
         let { base64Data, id_category } = req.body
         if (base64Data == "") {
@@ -78,7 +79,7 @@ const uploadImageCategory = async (req, res) => {
 
 
 
-const getImageProductBase64 = async (req, res) => {
+uploadImageFunction.getImageProductBase64 = async (req, res) => {
     try {
         const { id_product } = req.body;
         const product = await connection.query("Select * from product where id = $1", [id_product])
@@ -102,7 +103,7 @@ const getImageProductBase64 = async (req, res) => {
     }
 }
 
-const changeurlProduct = async (req, res) => {
+uploadImageFunction.changeurlProduct = async (req, res) => {
     try {
         const product = await connection.query("select * from product")
         for (var i = 0; i < product.rows.length; i++) {
@@ -122,7 +123,7 @@ const changeurlProduct = async (req, res) => {
     }
 }
 
-const changeurlCategory = async (req, res) => {
+uploadImageFunction.changeurlCategory = async (req, res) => {
     try {
         const category = await connection.query("select * from category")
         for (var i = 0; i < category.rows.length; i++) {
@@ -142,10 +143,4 @@ const changeurlCategory = async (req, res) => {
     }
 }
 
-module.exports = {
-    getImageProductBase64,
-    uploadImageProduct,
-    changeurlProduct,
-    changeurlCategory,
-    uploadImageCategory
-}
+module.exports = uploadImageFunction

@@ -1,103 +1,90 @@
 const { Router } = require('express');
 const router = Router();
-const fileUpload = require("express-fileupload");
-const {authenticateToken} = require("../middleware/authorization")
+const userFunction = require('../controllers/user.controllers');
+const productFunctions = require('../controllers/products.controller')
+const categoryFunctions = require('../controllers/category.controllers')
+const subCategoryFunctions = require('../controllers/subcategory.controllers')
+const defective_productFunctions = require('../controllers/defective_product.controllers')
+const supplierFunctions = require('../controllers/suppliers.controllers')
+const reportFunctions = require('../controllers/reportes.controllers')
+const wishCart = require('../controllers/wantedcart.controllers')
+const salesFunctions = require('../controllers/sales.controllers')
+const uploadImageFunction = require('../controllers/uploadimages.controller')
 
 //Rutas designadas a los usuarios
-const {getUsers, createUsers, deleteUser, updateUser,searchUser} = require('../controllers/user.controllers');
-
-router.get('/users', getUsers);
-router.post('/createuser', createUsers);
-router.put('/updateuser', updateUser);
-router.delete('/deleteuser', deleteUser);
-router.post('/searchuser',searchUser);
+router.get('/users', userFunction.getUsers);
+router.put('/updateuser', userFunction.updateUser);
+router.post('/searchuser',userFunction.searchUser);
+router.post('/modifyuser', userFunction.modifyUser);
 
 //Rutas designadas a los productos
-
-const {getProducts, searchProduct, createProduct, changeStock, changeStatus, modifyProduct, deleteProduct, getProductwithcategorys, selectProduct, getRandomProductCategory,getRandomProducts, getProductwithStockMin} = require('../controllers/products.controller');
-
-router.get('/products', getProducts);
-router.post('/searchproduct', searchProduct);
-router.post('/addproduct', createProduct);
-router.put('/updatestock', changeStock);
-router.put('/updatestatusproduct', changeStatus);
-router.put('/modifyproduct', modifyProduct);
-router.post('/deleteproduct', deleteProduct);
-router.post('/productcategory', getProductwithcategorys);
-router.post('/selectproduct', selectProduct);
-router.post('/getrandomproductcategory',getRandomProductCategory);
-router.get('/getrandomproduct',getRandomProducts);
-router.get('/getproductstockmin', getProductwithStockMin);
+router.get('/products', productFunctions.getProducts);
+router.post('/searchproduct', productFunctions.searchProduct);
+router.post('/addproduct', productFunctions.createProduct);
+router.put('/updatestock', productFunctions.changeStock);
+router.put('/updatestatusproduct', productFunctions.changeStatus);
+router.put('/modifyproduct', productFunctions.modifyProduct);
+router.post('/deleteproduct', productFunctions.deleteProduct);
+router.post('/productcategory', productFunctions.getProductwithcategorys);
+router.post('/selectproduct', productFunctions.selectProduct);
+router.post('/getrandomproductcategory',productFunctions.getRandomProductCategory);
+router.get('/getrandomproduct',productFunctions.getRandomProducts);
+router.get('/getproductstockmin', productFunctions.getProductwithStockMin);
 
 //Rutas designadas a categorias
+router.get('/category', categoryFunctions.getCategory);
+router.post('/createcategory', categoryFunctions.createCategory);
+router.post('/searchcategory',categoryFunctions.searchcategory);
+router.post('/modifycategory', categoryFunctions.modifycategory);
+router.post('/changestatuscategory', categoryFunctions.changeStatusCategory)
 
-const {getCategory,createCategory, searchcategory, modifycategory, changeStatusCategory} = require("../controllers/category.controllers")
-router.get('/category', getCategory);
-router.post('/createcategory', createCategory);
-router.post('/searchcategory',searchcategory);
-router.post('/modifycategory', modifycategory);
-router.post('/changestatuscategory', changeStatusCategory)
 //Rutas designadas a subcategorias
-
-const {getSubCategory,createSubCategory, searchsubcategory, modifysubcategory, changeStatussubCategory} = require("../controllers/subcategory.controllers")
-
-router.get('/subcategory', getSubCategory);
-router.post('/createsubcategory',createSubCategory);
-router.post('/searchsubcategory', searchsubcategory);
-router.post('/modifysubcategory', modifysubcategory);
-router.post('/changestatussubcategory', changeStatussubCategory);
+router.get('/subcategory', subCategoryFunctions.getSubCategory);
+router.post('/createsubcategory',subCategoryFunctions.createSubCategory);
+router.post('/searchsubcategory', subCategoryFunctions.searchsubcategory);
+router.post('/modifysubcategory', subCategoryFunctions.modifysubcategory);
+router.post('/changestatussubcategory', subCategoryFunctions.changeStatussubCategory);
 
 //Rutas designadas a productos defectuosos
-
-const {getDefectiveProduct, createDefectiveProduct} = require('../controllers/defective_product.controllers')
-
-router.post('/defectiveproduct', getDefectiveProduct);
-router.post('/adddefectiveproduct', createDefectiveProduct);
+router.post('/defectiveproduct', defective_productFunctions.getDefectiveProduct);
+router.post('/adddefectiveproduct', defective_productFunctions.createDefectiveProduct);
+router.post('/deletedefectiveproduct', defective_productFunctions.deleteDefectiveProduct);
 
 //Rutas designadas a proveedores
-const {getSuppliers, createSupplier, searchSupplier, deleteSupplier, modifysupplier, changeStatusSupplier} = require('../controllers/suppliers.controllers');
-
-router.get('/suppliers', getSuppliers);
-router.post('/addsupplier', createSupplier);
-router.post('/searchsupplier',searchSupplier);
-router.post('/deletesupplier',deleteSupplier);
-router.post('/modifysupplier', modifysupplier);
-router.post('/changestatussupplier',changeStatusSupplier)
+router.get('/suppliers', supplierFunctions.getSuppliers);
+router.post('/addsupplier', supplierFunctions.createSupplier);
+router.post('/searchsupplier', supplierFunctions.searchSupplier);
+router.post('/deletesupplier', supplierFunctions.deleteSupplier);
+router.post('/modifysupplier', supplierFunctions.modifysupplier);
+router.post('/changestatussupplier', supplierFunctions.changeStatusSupplier)
 
 //Rutas designadas a reportes
-
-const {reporteExistecia,boleta} = require('../controllers/reportes.controllers');
-router.get('/get-reporte-existencia',reporteExistecia);
-router.post('/get-boleta',boleta);
+router.get('/get-reporte-existencia', reportFunctions.reporteExistecia);
+router.post('/get-boleta', reportFunctions.boleta);
+router.get('/get-reporte-defective-product', reportFunctions.reporte_productos_defectuosos);
 
 //Rutas designada para productos deseados
-const {getWantedCart,addProductWantedCart,ModifyWantedCart,deleteProductWantedCart,modifystateWantedCart} = require('../controllers/wantedcart.controllers')
+router.post('/getwantedcart', wishCart.getWantedCart);
+router.post('/addproductwantedcart', wishCart.addProductWantedCart);
+router.post('/modifyproductwantedcart', wishCart.ModifyWantedCart);
+router.post('/deleteproductwantedcart', wishCart.deleteProductWantedCart);
+router.post('/modifystatewantedcart', wishCart.modifystateWantedCart);
 
-router.post('/getwantedcart',getWantedCart);
-router.post('/addproductwantedcart',addProductWantedCart);
-router.post('/modifyproductwantedcart',ModifyWantedCart);
-router.post('/deleteproductwantedcart',deleteProductWantedCart);
-router.post('/modifystatewantedcart',modifystateWantedCart);
 //Rutas designadas a ventas
-
-const {getSale,addSale,addProductToSale,confirmsale,removeProductToSale, addSaleWantedCart, confirmsaleWantedCart, getpayment_method} = require('../controllers/sales.controllers');
-
-router.post('/sales',getSale);
-router.post('/addsale',addSale);
-router.post('/addproductsale',addProductToSale);
-router.post('/removeproductsale',removeProductToSale);
-router.post('/confirmansale',confirmsale);
-router.post('/addsalewantedcart',addSaleWantedCart);
-router.post('/confirmsalewantedcart',confirmsaleWantedCart);
-router.get('/getpaymentmethod', getpayment_method);
+router.post('/sales', salesFunctions.getSale);
+router.post('/addsale', salesFunctions.addSale);
+router.post('/addproductsale', salesFunctions.addProductToSale);
+router.post('/removeproductsale', salesFunctions.removeProductToSale);
+router.post('/confirmansale', salesFunctions.confirmsale);
+router.post('/addsalewantedcart', salesFunctions.addSaleWantedCart);
+router.post('/confirmsalewantedcart', salesFunctions.confirmsaleWantedCart);
+router.get('/getpaymentmethod', salesFunctions.getpayment_method);
 
 //Rutas Imagenes
-
-const {getImageProductBase64, uploadImageProduct, changeurlProduct, changeurlCategory, uploadImageCategory} = require("../controllers/uploadimages.controller")
-router.post('/getimageproduct',getImageProductBase64);
-router.post('/uploadimageproduct',fileUpload(), uploadImageProduct);
-router.get('/uploadimagecategory',uploadImageCategory);
-router.get('/changeurlproduct',changeurlProduct);
-router.get('/changeurlcategory',changeurlCategory);
+router.post('/getimageproduct', uploadImageFunction.getImageProductBase64);
+router.post('/uploadimageproduct', uploadImageFunction.uploadImageProduct);
+router.get('/uploadimagecategory', uploadImageFunction.uploadImageCategory);
+router.get('/changeurlproduct', uploadImageFunction.changeurlProduct);
+router.get('/changeurlcategory', uploadImageFunction.changeurlCategory);
 
 module.exports = router;

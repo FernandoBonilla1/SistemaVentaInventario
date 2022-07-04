@@ -1,6 +1,7 @@
 const connection = require('../config/db');
+const wishCart = {}
 
-const getWantedCart = async (req, res) => {
+wishCart.getWantedCart = async (req, res) => {
     try {
         const { rut } = req.body;
         const user = await connection.query('select * from users where users.rut = $1', [rut])
@@ -24,7 +25,7 @@ const getWantedCart = async (req, res) => {
     }
 }
 
-const addProductWantedCart = async (req, res) => {
+wishCart.addProductWantedCart = async (req, res) => {
     try {
         const { rut, id_product, amount } = req.body;
         if (amount < 0) {
@@ -59,7 +60,7 @@ const addProductWantedCart = async (req, res) => {
     }
 }
 
-const ModifyWantedCart = async (req, res) => {
+wishCart.ModifyWantedCart = async (req, res) => {
     try {
         const { rut, id_product, amount } = req.body;
         if (amount < 0) {
@@ -80,7 +81,7 @@ const ModifyWantedCart = async (req, res) => {
     }
 }
 
-const deleteProductWantedCart = async (req, res) => {
+wishCart.deleteProductWantedCart = async (req, res) => {
     try {
         const { rut, id_product } = req.body;
         if (id_product == "") {
@@ -107,7 +108,7 @@ const deleteProductWantedCart = async (req, res) => {
     }
 }
 
-const modifystateWantedCart = async(req, res) => {
+wishCart.modifystateWantedCart = async(req, res) => {
     try{
         const{rut,confirmcart} = req.body;
         const user = await connection.query('select * from users where users.rut = $1', [rut])
@@ -127,10 +128,4 @@ const modifystateWantedCart = async(req, res) => {
     }
 }
 
-module.exports = {
-    getWantedCart,
-    addProductWantedCart,
-    ModifyWantedCart,
-    deleteProductWantedCart,
-    modifystateWantedCart
-}
+module.exports = wishCart

@@ -1,12 +1,12 @@
-
 const connection = require('../config/db');
-//const bcrypt = require('bcrypt');
 const bcryptjs = require('bcryptjs');
 
-const getUsers = async (req, res) => {
+const userFunction = {};
+
+userFunction.getUsers = async (req, res) => {
     try {
-        const users = await connection.query('SELECT * FROM users');
-        if (users === 0) {
+        const users = await connection.query('SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city from users');
+        if (users.rows.length === 0) {
             return res.status(400).json({
                 msg: "No hay usuarios"
             })
@@ -21,46 +21,7 @@ const getUsers = async (req, res) => {
 
 }
 
-const createUsers = async (req, res) => {
-    try {
-        const { rut, name, surname, password, email, address, phone, city } = req.body;
-        const banned = false;
-        const hashedPassword = await bcryptjs.hash(password, 10);
-        const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-            [rut, name, surname, hashedPassword, email, address, phone, city, banned]);
-        res.status(200).json({
-            msg: `Se logro ingresar el usuario con rut: ${rut}`
-        });
-    } catch (error) {
-        res.status(500).json({
-            msg: "No se pudo ingresar el usuario",
-            error
-        })
-    }
-}
-
-
-const deleteUser = async (req, res) => {
-    try {
-        const { rut } = req.body;
-        const user = await connection.query('select * from users where rut = $1',[rut]);
-        if(user.rows.length === 0){
-            res.status(400).json({
-                msg: `El usuario no existe`
-            })
-        }
-        const users = await connection.query('DELETE FROM users WHERE rut = $1', [rut]);
-        res.status(200).json({
-            msg: `Se elimino el usuario con rut: ${rut}`
-        })
-    } catch (error) {
-        res.status(401).json({
-            msg: "No se pudo eliminar el usuario"
-        });
-    }
-};
-
-const updateUser = async (req, res) => {
+userFunction.updateUser = async (req, res) => {
     try {
         const { rut, banned } = req.body;
         const users = await connection.query('UPDATE users SET banned = $1 WHERE rut = $2', [banned, rut]);
@@ -74,7 +35,7 @@ const updateUser = async (req, res) => {
     }
 }
 
-const searchUser = async (req, res) => {
+userFunction.searchUser = async (req, res) => {
     try {
         const { rut } = req.body;
         const users = await connection.query(`SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city from users WHERE rut = $1 `, [rut]);
@@ -92,10 +53,33 @@ const searchUser = async (req, res) => {
     }
 }
 
-module.exports = {
-    getUsers,
-    createUsers,
-    deleteUser,
-    updateUser,
-    searchUser
+userFunction.modifyUser = async (req, res) => {
+    try{
+        const {rut, name, surname, email, address, phone, city} = req.body
+        if(name == "" || surname == "" || email == ""  || address == "" || phone == "" || city == ""){
+            return res.status(400).json({
+                msg: "Debe rellenar los campos."
+            });
+        } else {
+            const users1 = await connection.query("Select * from users where rut = $1", [rut]);
+            if(users1.rows.length === 0){
+                return res.status(200).json({
+                    msg: "El usuario no existe"
+                });
+            } else {
+                const users2 = await connection.query("UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6 WHERE rut = $7",[name,surname,email,address,phone,city,rut]);
+                res.status(200).json({
+                    msg: `Se ha actualizo el usuario`
+                });
+            }
+        }
+    } catch(error){
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla usuario",
+            error
+        })
+    }
 }
+
+
+module.exports = userFunction

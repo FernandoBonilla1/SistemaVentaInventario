@@ -1,7 +1,8 @@
 const connection = require('../config/db');
-const capitalizar = require("./products.controller")
+const functions = require('../helpers/functionshelper')
+const subCategoryFunctions = {}
 
-const getSubCategory = async (req, res) => {
+subCategoryFunctions.getSubCategory = async (req, res) => {
     try {
         const subcategory = await connection.query('SELECT * FROM subcategory');
         if (subcategory.rows.length === 0) {
@@ -19,7 +20,7 @@ const getSubCategory = async (req, res) => {
 }
 
 
-const createSubCategory = async (req, res) => {
+subCategoryFunctions.createSubCategory = async (req, res) => {
     try {
         const { name, description, id_category } = req.body;
         const removed = false;
@@ -47,10 +48,10 @@ const createSubCategory = async (req, res) => {
     }
 }
 
-const searchsubcategory = async (req, res) => {
+subCategoryFunctions.searchsubcategory = async (req, res) => {
     try {
         const { name } = req.body;
-        nameCapitalize = capitalizar.capitalizarPrimeraLetra(name)
+        nameCapitalize = functions.capitalizarPrimeraLetra(name)
             const categories = await connection.query(`SELECT * FROM subcategory where name LIKE '${nameCapitalize}%'`);
             if (categories.rows.length === 0) {
                 return res.status(200).json({
@@ -66,7 +67,7 @@ const searchsubcategory = async (req, res) => {
     }
 }
 
-const modifysubcategory = async (req, res) => {
+subCategoryFunctions.modifysubcategory = async (req, res) => {
     try {
         const { id, name, description } = req.body;
         if (id == "" || name == "" || description == "") {
@@ -94,7 +95,7 @@ const modifysubcategory = async (req, res) => {
     }
 }
 
-const changeStatussubCategory = async (req, res) => {
+subCategoryFunctions.changeStatussubCategory = async (req, res) => {
     try {
         const { id, removed } = req.body;
         if (id == "") {
@@ -121,10 +122,4 @@ const changeStatussubCategory = async (req, res) => {
         })
     }
 }
-module.exports = {
-    getSubCategory,
-    createSubCategory,
-    searchsubcategory,
-    modifysubcategory,
-    changeStatussubCategory
-}
+module.exports = subCategoryFunctions

@@ -1,11 +1,8 @@
 const connection = require('../config/db');
+const functions = require('../helpers/functionshelper')
+const productFunctions = {};
 
-
-function capitalizarPrimeraLetra(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-const getProductwithStockMin = async (req, res) => {
+productFunctions.getProductwithStockMin = async (req, res) => {
     try {
         const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url, product.stockmin as stockmin from product INNER join subcategory on (product.id_subcategory = subcategory.id) where (product.amount <= product.stockmin) ');
         if (product.rows.length === 0) {
@@ -24,7 +21,7 @@ const getProductwithStockMin = async (req, res) => {
 
 
 
-const getRandomProducts = async (req, res) => {
+productFunctions.getRandomProducts = async (req, res) => {
     try {
         const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) order by random() limit 6');
         if (product.rows.length === 0) {
@@ -41,7 +38,7 @@ const getRandomProducts = async (req, res) => {
     }
 }
 
-const getRandomProductCategory = async (req, res) => {
+productFunctions.getRandomProductCategory = async (req, res) => {
     try {
         const { id_category } = req.body
         const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) where subcategory.id_category = $1 order by random() limit 4', [id_category]);
@@ -59,7 +56,7 @@ const getRandomProductCategory = async (req, res) => {
     }
 }
 
-const getProducts = async (req, res) => {
+productFunctions.getProducts = async (req, res) => {
     try {
         const products = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)');
         if (products.rows.length === 0) {
@@ -78,7 +75,7 @@ const getProducts = async (req, res) => {
 }
 
 
-const getProductwithcategorys = async (req, res) => {
+productFunctions.getProductwithcategorys = async (req, res) => {
     try {
         const { id_category, id_subcategory } = req.body;
         if (id_category == undefined && id_subcategory == undefined) {
@@ -126,7 +123,7 @@ const getProductwithcategorys = async (req, res) => {
     }
 }
 
-const selectProduct = async (req, res) => {
+productFunctions.selectProduct = async (req, res) => {
     try {
         const { id_product, id_category, id_subcategory } = req.body;
         const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as idcategory, subcategory.id as idsubcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where product.id = $1 and category.id = $2 and subcategory.id = $3', [id_product, id_category, id_subcategory])
@@ -144,10 +141,10 @@ const selectProduct = async (req, res) => {
     }
 }
 
-const searchProduct = async (req, res) => {
+productFunctions.searchProduct = async (req, res) => {
     try {
         const { name } = req.body;
-        nameCapitalize = capitalizarPrimeraLetra(name);
+        nameCapitalize = functions.capitalizarPrimeraLetra(name);
         const products = await connection.query(`SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`);
         if (products.rows.length === 0) {
             return res.status(200).json({
@@ -164,7 +161,7 @@ const searchProduct = async (req, res) => {
 
 }
 
-const createProduct = async (req, res) => {
+productFunctions.createProduct = async (req, res) => {
     try {
         const { name, year, brand, description, amount, stockmin, value, id_subcategory, id_supplier } = req.body;
         const removed = false;
@@ -192,7 +189,7 @@ const createProduct = async (req, res) => {
     }
 }
 
-const changeStock = async (req, res) => {
+productFunctions.changeStock = async (req, res) => {
     try {
         const { id, amount } = req.body;
         if (id == undefined || amount == undefined) {
@@ -225,7 +222,7 @@ const changeStock = async (req, res) => {
     }
 }
 
-const modifyProduct = async (req, res) => {
+productFunctions.modifyProduct = async (req, res) => {
     try {
         const { id, name, year, brand, description, amount, value, stockmin } = req.body;
         if (id == "" || name == "" || year == "" || brand == "" || amount == "" || value == "" || stockmin == "") {
@@ -259,7 +256,7 @@ const modifyProduct = async (req, res) => {
     }
 }
 
-const deleteProduct = async (req, res) => {
+productFunctions.deleteProduct = async (req, res) => {
     try {
         const { id } = req.body;
         if (id == "") {
@@ -289,7 +286,7 @@ const deleteProduct = async (req, res) => {
 
 
 
-const changeStatus = async (req, res) => {
+productFunctions.changeStatus = async (req, res) => {
     try {
         const { id, removed } = req.body;
         if (id == "") {
@@ -316,20 +313,4 @@ const changeStatus = async (req, res) => {
         })
     }
 }
-
-
-module.exports = {
-    getProducts,
-    searchProduct,
-    createProduct,
-    changeStock,
-    changeStatus,
-    modifyProduct,
-    deleteProduct,
-    getProductwithcategorys,
-    selectProduct,
-    getRandomProductCategory,
-    getRandomProducts,
-    getProductwithStockMin,
-    capitalizarPrimeraLetra
-}
+module.exports = productFunctions
