@@ -83,7 +83,7 @@ router.get('/getpaymentmethod', salesFunctions.getpayment_method);
 //Rutas Imagenes
 router.post('/getimageproduct', uploadImageFunction.getImageProductBase64);
 router.post('/uploadimageproduct', uploadImageFunction.uploadImageProduct);
-router.get('/uploadimagecategory', uploadImageFunction.uploadImageCategory);
+router.post('/uploadimagecategory', uploadImageFunction.uploadImageCategory);
 router.get('/changeurlproduct', uploadImageFunction.changeurlProduct);
 router.get('/changeurlcategory', uploadImageFunction.changeurlCategory);
 
