@@ -1,3 +1,4 @@
+
 const connection = require('../config/db');
 const functions = require('../helpers/functionshelper');
 const salesFunctions = {}
@@ -44,15 +45,16 @@ salesFunctions.addSale = async (req, res) => {
         const cant = await connection.query('SELECT count(*) from sale')
         const id = `${functions.generateRandomString(7) + cant.rows[0].count}`
         const id_sale = id.trim()
-        const client = await connection.query("select * from users where rut = $1",[id_cliente]);
-        if(client.rows.length === 0){
+        const client = await connection.query("select * from users where rut = $1", [id_cliente]);
+        if (client.rows.length === 0) {
             return res.status(400).json({
                 msg: "El cliente no existe"
             })
         }
         const sale = await connection.query('INSERT INTO sale(id,id_cliente,id_salesman,date) VALUES($1,$2,$3,$4)', [id_sale, id_cliente, id_salesman, fecha_actual]);
         res.status(200).json({
-            id: id_sale
+            id: id_sale,
+            rut_cliente: id_cliente
         });
     } catch (error) {
         res.status(500).json({
@@ -75,10 +77,17 @@ salesFunctions.removeProductToSale = async (req, res) => {
                     msg: "El producto no esta en la venta"
                 })
             } else {
-                const product2 = await connection.query('DELETE FROM details Where id_sale = $1 and id_product = $2', [id, id_product]);
-                res.status(200).json({
-                    msg: `Se elimino el producto de la venta.`
-                })
+                const sale = await connection.query("Select * from sale where id = $1", [id]);
+                if (sale.rows[0].id_payment_method != null) {
+                    return res.status(400).json({
+                        msg: "No puede interactuar con una venta que ya fue finalizada."
+                    })
+                } else {
+                    const product2 = await connection.query('DELETE FROM details Where id_sale = $1 and id_product = $2', [id, id_product]);
+                    res.status(200).json({
+                        msg: `Se elimino el producto de la venta.`
+                    })
+                }
             }
         }
     } catch (error) {
@@ -102,16 +111,23 @@ salesFunctions.addProductToSale = async (req, res) => {
                     msg: "El producto no existe"
                 })
             } else {
-                if (Product1.rows[0].amount < amount) {
-                    return res.status(200).json({
-                        msg: "No hay stock suficiente"
+                const sale = await connection.query("Select * from sale where id = $1", [id]);
+                if (sale.rows[0].id_payment_method != null) {
+                    return res.status(400).json({
+                        msg: "No puede interactuar con una venta que ya fue finalizada."
                     })
                 } else {
-                    const price = Product1.rows[0].value * amount
-                    const product = await connection.query("INSERT INTO details(id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)", [id, id_product, amount, price])
-                    res.status(200).json({
-                        msg: `Se ingreso el producto con id: ${id_product}`
-                    });
+                    if (Product1.rows[0].amount < amount) {
+                        return res.status(200).json({
+                            msg: "No hay stock suficiente"
+                        })
+                    } else {
+                        const price = Product1.rows[0].value * amount
+                        const product = await connection.query("INSERT INTO details(id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)", [id, id_product, amount, price])
+                        res.status(200).json({
+                            msg: `Se ingreso el producto con id: ${id_product}`
+                        });
+                    }
                 }
             }
         }
@@ -153,7 +169,7 @@ salesFunctions.confirmsale = async (req, res) => {
 
 salesFunctions.addSaleWantedCart = async (req, res) => {
     try {
-        const { rut, id_salesman } = req.body;
+        const { rut, id_salesman, id_sale } = req.body;
         const user = await connection.query('select * from users where users.rut = $1', [rut])
         if (user.rows.length === 0) {
             return res.status(200).json({
@@ -165,7 +181,7 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
                 msg: "La lista de objetos deseados no esta confirmado"
             })
         } else {
-            const wantedcart1 = await connection.query('select wantedcart.id_product , product.id as idproduct, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.amount as productamount, product.value from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1', [rut]);
+            const wantedcart1 = await connection.query('select wantedcart.id_product , product.id as idproduct, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount, product.value from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1', [rut]);
             if (wantedcart1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "No hay productos en tu lista de deseados"
@@ -173,69 +189,30 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
             }
             const wantedcart2 = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1 and wantedcart.amount > product.amount', [rut])
             if (wantedcart2.rows.length === 0) {
-                const fecha_actual = functions.getCurrentDate();
-                const cant = await connection.query('SELECT count(*) from sale')
-                const id = `${functions.generateRandomString(7) + cant.rows[0].count}`
-                const id_sale = id.trim()
-                const sale = await connection.query('INSERT INTO sale(id,id_cliente,id_salesman,date) VALUES($1,$2,$3,$4)', [id_sale, rut, id_salesman, fecha_actual]);
-                try {
-                    var price = 0;
-                    for (var i = 0; i < wantedcart1.rows.length; i++) {
-                        price = wantedcart1.rows[i].amount * wantedcart1.rows[i].value
-                        var amount = wantedcart1.rows[i].amount;
-                        var id_product = wantedcart1.rows[i].id_product;
-                        var insert = await connection.query("INSERT INTO details(id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)", [id_sale, id_product, amount, price])
-                        price = 0
-                    }
-                    res.status(200).json({
-                        id: id_sale
-                    });
-                } catch (error) {
-                    res.status(500).json({
-                        msg: "No se pudo agregar los productos a detalles"
-                    })
+                var price = 0;
+                for(var i = 0; i<wantedcart1.rows.length; i++){
+                    price = wantedcart1.rows[i].price * wantedcart1.rows[i].amount;
+                    var insert = await connection.query('INSERT INTO details (id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)', [id_sale,wantedcart1.rows[i].id_product,wantedcart1.rows[i].amount,price]);
+                    price = 0
                 }
+                const clear = await connection.query(`DELETE FROM wantedcart WHERE rut_user = $1`, [rut])
+                const verifycart = await connection.query('UPDATE users SET confirmcart = $1 WHERE rut = $2',[false,rut])
+                res.status(200).json({
+                    msg: "Se ingreso la lista de los deseados a la boleta",
+                    id_sale: id_sale,
+                    rut: rut
+                })
             } else {
-                return res.status(200).json(wantedcart2.rows)
+                return res.status(400).json(wantedcart2.rows)
             }
         }
     } catch (error) {
         res.status(500).json({
-            msg: "No se pudo crear la venta"
+            msg: "No se pudo crear la venta",
+            error: error
         })
     }
 }
 
-salesFunctions.confirmsaleWantedCart = async (req, res) => {
-    try {
-        const { id, id_payment_method } = req.body
-        
-        const sale = await connection.query("UPDATE sale SET id_payment_method = $1 WHERE id = $2", [id_payment_method, id])
-        try {
-            const details = await connection.query("Select sale.id as id_sale, sale.id_cliente as rut, details.id_product as id_product, details.amount as purchased_amount, product.amount as product_amount, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) Where sale.id = $1", [id]);
-            var price = 0
-            
-            for (var i = 0; i < details.rows.length; i++) {
-                var amount = details.rows[i].product_amount - details.rows[i].purchased_amount;
-                price = price + details.rows[i].price
-                var update = await connection.query("UPDATE product SET amount = $1 WHERE id = $2", [amount, details.rows[i].id_product])
-            }
-            const rut = details.rows[0].rut
-            const clear = await connection.query(`DELETE FROM wantedcart WHERE rut_user = $1`,[rut])
-            res.status(200).json({
-                id: id,
-                total: price
-            });
-        } catch (error) {
-            res.status(500).json({
-                msg: "No se pudo acceder a la tabla detalles"
-            })
-        }
-    } catch (error) {
-        res.status(500).json({
-            msg: "No se pudo acceder a la tabla ventas"
-        })
-    }
-}
 
 module.exports = salesFunctions

@@ -62,6 +62,7 @@ router.post('/changestatussupplier', supplierFunctions.changeStatusSupplier)
 router.get('/get-reporte-existencia', reportFunctions.reporteExistecia);
 router.post('/get-boleta', reportFunctions.boleta);
 router.get('/get-reporte-defective-product', reportFunctions.reporte_productos_defectuosos);
+router.get('/get-reporte-ventas-totales',reportFunctions.reporte_ventas_totales);
 
 //Rutas designada para productos deseados
 router.post('/getwantedcart', wishCart.getWantedCart);
@@ -77,7 +78,6 @@ router.post('/addproductsale', salesFunctions.addProductToSale);
 router.post('/removeproductsale', salesFunctions.removeProductToSale);
 router.post('/confirmansale', salesFunctions.confirmsale);
 router.post('/addsalewantedcart', salesFunctions.addSaleWantedCart);
-router.post('/confirmsalewantedcart', salesFunctions.confirmsaleWantedCart);
 router.get('/getpaymentmethod', salesFunctions.getpayment_method);
 
 //Rutas Imagenes

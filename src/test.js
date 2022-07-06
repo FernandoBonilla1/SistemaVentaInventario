@@ -20,28 +20,8 @@ functions.generateRandomString = (num) => {
 //var text1 = "aaaaaa"
 //console.log(text1.toUpperCase());
 
-
-const randomstring = functions.generateRandomString(15);
-
-
-const { generateRandomString } = require('./helpers/functionshelper');
-
-// Create the transporter with the required configuration for Outlook
-// change the user and pass !
-
-transporter = functions.transporter()
-mailOptions = functions.mailOptions("fbr009@alumnos.ucn.cl","prueba",functions.getHtmlForgotPassword(randomstring))
-
-transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-        return res.status(500).json({error:error})
-    }
-    return res.status(200).json({
-        msg: "Se envio el correo",
-        info: info.message
-    })
-});
-
+const date = new Date();
+console.log(date.getFullYear());
 
 /*
 var transporter = nodemailer.createTransport({
