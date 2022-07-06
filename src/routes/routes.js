@@ -16,6 +16,7 @@ router.get('/users', userFunction.getUsers);
 router.put('/updateuser', userFunction.updateUser);
 router.post('/searchuser',userFunction.searchUser);
 router.post('/modifyuser', userFunction.modifyUser);
+router.post('/modifyroleuser', userFunction.modifyRole);
 
 //Rutas designadas a los productos
 router.get('/products', productFunctions.getProducts);
@@ -62,7 +63,8 @@ router.post('/changestatussupplier', supplierFunctions.changeStatusSupplier)
 router.get('/get-reporte-existencia', reportFunctions.reporteExistecia);
 router.post('/get-boleta', reportFunctions.boleta);
 router.get('/get-reporte-defective-product', reportFunctions.reporte_productos_defectuosos);
-router.get('/get-reporte-ventas-totales',reportFunctions.reporte_ventas_totales);
+router.get('/get-reporte-ventas-totales-por-precio',reportFunctions.reporte_ventas_totales_por_precio);
+router.get('/get-reporte-ventas-totales-por-cantidad-vendida',reportFunctions.reporte_ventas_totales_por_cantidad_vendida)
 
 //Rutas designada para productos deseados
 router.post('/getwantedcart', wishCart.getWantedCart);

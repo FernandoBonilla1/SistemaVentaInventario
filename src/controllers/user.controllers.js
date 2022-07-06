@@ -24,10 +24,17 @@ userFunction.getUsers = async (req, res) => {
 userFunction.updateUser = async (req, res) => {
     try {
         const { rut, banned } = req.body;
-        const users = await connection.query('UPDATE users SET banned = $1 WHERE rut = $2', [banned, rut]);
-        res.status(200).json({
-            msg: `Se modifico el estado del usuario: ${rut}`
-        })
+        const users1 = await connection.query("Select * from users where rut = $1", [rut]);
+        if (users1.rows.length === 0) {
+            return res.status(400).json({
+                msg: "El usuario no existe"
+            })
+        } else {
+            const users2 = await connection.query('UPDATE users SET banned = $1 WHERE rut = $2', [banned, rut]);
+            res.status(200).json({
+                msg: `Se modifico el estado del usuario: ${rut}`
+            })
+        }
     } catch (error) {
         res.status(401).json({
             msg: "No se pudo modificar el estado del usuario"
@@ -54,26 +61,48 @@ userFunction.searchUser = async (req, res) => {
 }
 
 userFunction.modifyUser = async (req, res) => {
-    try{
-        const {rut, name, surname, email, address, phone, city} = req.body
-        if(name == "" || surname == "" || email == ""  || address == "" || phone == "" || city == ""){
+    try {
+        const { rut, name, surname, email, address, phone, city } = req.body
+        if (name == "" || surname == "" || email == "" || address == "" || phone == "" || city == "") {
             return res.status(400).json({
                 msg: "Debe rellenar los campos."
             });
         } else {
             const users1 = await connection.query("Select * from users where rut = $1", [rut]);
-            if(users1.rows.length === 0){
+            if (users1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El usuario no existe"
                 });
             } else {
-                const users2 = await connection.query("UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6 WHERE rut = $7",[name,surname,email,address,phone,city,rut]);
+                const users2 = await connection.query("UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6 WHERE rut = $7", [name, surname, email, address, phone, city, rut]);
                 res.status(200).json({
                     msg: `Se ha actualizo el usuario`
                 });
             }
         }
-    } catch(error){
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo acceder a la tabla usuario",
+            error
+        })
+    }
+}
+
+userFunction.modifyRole = async(req, res) => {
+    try{
+        const {rut, role} = req.body
+        const users1 = await connection.query("Select * from users where rut = $1", [rut]);
+        if (users1.rows.length === 0) {
+            return res.status(400).json({
+                msg: "El usuario no existe"
+            })
+        } else {
+            const users2 = await connection.query('UPDATE users SET role = $1 WHERE rut = $2', [role, rut]);
+            res.status(200).json({
+                msg: `Se modifico el rol del usuario con rut: ${rut}`
+            })
+        }
+    } catch (error) {
         res.status(500).json({
             msg: "No se pudo acceder a la tabla usuario",
             error

@@ -3,7 +3,7 @@ const PDF = require('pdfkit-construct');
 const functions = require('../helpers/functionshelper');
 const reportFunctions = {}
 
-reportFunctions.reporte_ventas_totales = async (req, res) => {
+reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
     try {
 
         const doc = new PDF({
@@ -22,6 +22,79 @@ reportFunctions.reporte_ventas_totales = async (req, res) => {
         doc.on('end', () => { stream.end() });
 
         const sales = await connection.query('select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by total desc')
+        const registros = sales.rows.map((sale) => {
+            const registro = {
+                id: sale.id,
+                name: sale.name,
+                amount: sale.amount,
+                total: sale.total
+            }
+            return registro
+        })
+
+        doc.setDocumentHeader({ height: '10' }, () => {
+            doc.fontSize(18).text('Reporte de ventas totales por producto\n', {
+                align: 'center'
+            });
+
+            doc.fontSize(12);
+
+            doc.text('EMPRESA: MACACO', {
+                marginLeft: 150,
+                align: 'left'
+            })
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
+                marginLeft: 100,
+                align: 'left'
+            })
+
+        })
+
+        doc.addTable([
+            { key: 'id', label: 'ID Venta', align: 'left' },
+            { key: 'name', label: 'ID metodo pago', align: 'left' },
+            { key: 'amount', label: 'Fecha', align: 'left' },
+            { key: 'total', label: 'Total', align: 'left' }
+        ], registros, {
+            border: { size: 0.1, color: '#cdcdcd' },
+            width: "fill_body",
+            striped: false,
+            stripedColors: ["#f6f6f6", "#d6c4dd"],
+            cellsPadding: 10,
+            marginLeft: 10,
+            marginRight: 10,
+            headAlign: 'left'
+        })
+
+        doc.render();
+        doc.end();
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo crear el documento",
+            error: error
+        })
+    }
+}
+
+reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) => {
+    try {
+
+        const doc = new PDF({
+            size: 'A4',
+            margins: { top: 10, left: 10, right: 10, bottom: 10 },
+            bufferPages: true
+        });
+
+        const filename = `Reporte de ventas totales ${Date.now()}.pdf`;
+
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-disposition': `attachment;filename=${filename}`
+        });
+        doc.on('data', (data) => { stream.write(data) });
+        doc.on('end', () => { stream.end() });
+
+        const sales = await connection.query('select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by details.amount desc')
         const registros = sales.rows.map((sale) => {
             const registro = {
                 id: sale.id,
