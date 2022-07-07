@@ -20,7 +20,7 @@ functions.capitalizarPrimeraLetra = (str) => {
 functions.getCurrentDate = () => {
     const date = Date.now();
     const hoy = new Date(date);
-    const fecha_actual = hoy.toLocaleDateString();
+    const fecha_actual = hoy.toISOString().slice(0,10);
     return fecha_actual;
 }
 

@@ -11,14 +11,13 @@ uploadImageFunction.uploadImageProduct = async (req, res) => {
                 msg: "Debe enviar el string en base 64"
             })
         } else {
-            base64Data = base64Data.replace("data:image/png;base64,", "");
             const product = await connection.query("select * from product where id = $1",[id_product]);
             if(product.rows.length === 0){
                 return res.status(400).json({
                     msg: "El producto no existe"
                 })
             } else {
-                fs.writeFileSync(`src/upload/category/category${id_product}.png`, base64Data, 'base64');
+                fs.writeFileSync(`src/upload/category/category${id_product}.png`, base64Data.replace("data:image/png;base64,", ""), 'base64');
                 try{
                     var product1 = await connection.query("UPDATE product set url = $1 where id = $2", [base64Data, id_product])
                     res.status(200).json({
@@ -48,14 +47,13 @@ uploadImageFunction.uploadImageCategory = async (req, res) => {
                 msg: "Debe enviar el string en base 64"
             })
         } else {
-            base64Data = base64Data.replace("data:image/png;base64,", "");
             const category = await connection.query("select * from category where id = $1",[id_category]);
             if(category.rows.length === 0){
                 return res.status(400).json({
                     msg: "La categoria no existe"
                 })
             } else {
-                fs.writeFileSync(`src/upload/category/category${id_category}.png`, base64Data, 'base64');
+                fs.writeFileSync(`src/upload/category/category${id_category}.png`, base64Data.replace("data:image/png;base64,", ""), 'base64');
                 try{
                     var category1 = await connection.query("UPDATE category set url = $1 where id = $2", [base64Data, id_category])
                     res.status(200).json({

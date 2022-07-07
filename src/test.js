@@ -20,8 +20,9 @@ functions.generateRandomString = (num) => {
 //var text1 = "aaaaaa"
 //console.log(text1.toUpperCase());
 
-const date = new Date();
-console.log(date.getFullYear());
+const date = Date.now();
+const hoy = new Date(date);
+const fecha_actual = hoy.toISOString().slice(0,10);
 
 /*
 var transporter = nodemailer.createTransport({
