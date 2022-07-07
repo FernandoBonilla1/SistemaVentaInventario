@@ -23,20 +23,20 @@ salesFunctions.getpayment_method = async (req, res) => {
 salesFunctions.getSale = async (req, res) => {
     try {
         const { id } = req.body
-        const sales = await connection.query('Select sale.id as id_sale, sale.id_payment_method, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1', [id]);
+        const sales = await connection.query('Select sale.id as id_sale, sale.id_cliente as cliente, sale.id_payment_method, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1', [id]);
         if (sales.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos en la venta"
             })
         } else {
-            if(sales.rows[0].id_payment_method != null){
-                return res.status(200).json({
+            if (sales.rows[0].id_payment_method != null) {
+                return res.status(400).json({
                     msg: "No se puede acceder a una boleta que ya fue finalizada"
                 })
             }
             res.status(200).json(sales.rows);
         }
-        
+
     } catch (error) {
         res.status(500).json({
             msg: "No se puedieron acceder a la tabla de ventas",
@@ -197,13 +197,13 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
             const wantedcart2 = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1 and wantedcart.amount > product.amount', [rut])
             if (wantedcart2.rows.length === 0) {
                 var price = 0;
-                for(var i = 0; i<wantedcart1.rows.length; i++){
+                for (var i = 0; i < wantedcart1.rows.length; i++) {
                     price = wantedcart1.rows[i].price * wantedcart1.rows[i].amount;
-                    var insert = await connection.query('INSERT INTO details (id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)', [id_sale,wantedcart1.rows[i].id_product,wantedcart1.rows[i].amount,price]);
+                    var insert = await connection.query('INSERT INTO details (id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)', [id_sale, wantedcart1.rows[i].id_product, wantedcart1.rows[i].amount, price]);
                     price = 0
                 }
                 const clear = await connection.query(`DELETE FROM wantedcart WHERE rut_user = $1`, [rut])
-                const verifycart = await connection.query('UPDATE users SET confirmcart = $1 WHERE rut = $2',[false,rut])
+                const verifycart = await connection.query('UPDATE users SET confirmcart = $1 WHERE rut = $2', [false, rut])
                 res.status(200).json({
                     msg: "Se ingreso la lista de los deseados a la boleta",
                     id_sale: id_sale,
@@ -222,8 +222,26 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
 }
 
 salesFunctions.deleteRecordsOfTwoYears = async (req, res) => {
-    try{
-
+    try {
+        const sales = await connection.query("Select sale.id, sale.date from sale")
+        const date = functions.getCurrentDate()
+        const division = date.split('-')
+        const anno = division[0] - 2
+        const dateTwoYearBefore = new Date(`${anno}-${division[1]}-${division[2]}`)
+        const registros = sales.rows.map((sale) => {
+          const registro = {
+              id: sale.id,
+              date: new Date(sale.date)
+          }
+          return registro
+      })
+      for(var i = 0;i < registros.length; i++){
+        if(registros[i].date < dateTwoYearBefore){
+            var delete_records_details = await connection.query("Delete from details where id_sale = $1",[registros[i].id])
+            var delete_records_sale = await connection.query("Delete from sale where id = $1",[registros[i].id])
+        }
+      }
+      res.status(200).json({msg: "Se eliminaron los registros de hace 2 años"})
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo eliminar los registros.",

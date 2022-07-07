@@ -1,16 +1,16 @@
 //const connection = require('../config/db');
 const credentials = require('./credencialesgmail.json')
 const functions = require('./helpers/functionshelper')
-
+const connection = require('./config/db')
 functions.generateRandomString = (num) => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result1 = ' ';
-    const charactersLength = characters.length;
-    for (let i = 0; i < num; i++) {
-        result1 += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result1 = ' ';
+  const charactersLength = characters.length;
+  for (let i = 0; i < num; i++) {
+    result1 += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
 
-    return result1;
+  return result1;
 }
 //const randomstring = generateRandomString(10);
 //console.log(randomstring)
@@ -20,13 +20,34 @@ functions.generateRandomString = (num) => {
 //var text1 = "aaaaaa"
 //console.log(text1.toUpperCase());
 
-const date = Date.now();
-const hoy = new Date(date);
-const fecha_actual = hoy.toISOString().slice(0,10);
+const deleteRegisterOld = async (req, res) => {
+  try {
+    const sales = await connection.query("Select sale.id, sale.date from sale")
+    const date = functions.getCurrentDate()
+    const currentDate = new Date(date);
+    const division = date.split('-')
+    const anno = division[0] - 2
+    const dateTwoYearBefore = new Date(`${anno}-${division[1]}-${division[2]}`)
+    const registros = sales.map((sale) => {
+      const registro = {
+          id: sale.id,
+          id_sale: new Date(sale.date)
+      }
+      return registro
+  })
 
-console.log(hoy.toLocaleDateString())
-console.log("")
-console.log(fecha_actual)
+  console.log(registros)
+    
+
+  } catch (error) {
+    res.status(500).json({
+      msg: "No se pudo eliminar los registros.",
+      error: error
+    })
+  }
+}
+
+deleteRegisterOld();
 
 /*
 var transporter = nodemailer.createTransport({

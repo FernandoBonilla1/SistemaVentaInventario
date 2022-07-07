@@ -85,6 +85,7 @@ router.post('/removeproductsale', salesFunctions.removeProductToSale);
 router.post('/confirmansale', salesFunctions.confirmsale);
 router.post('/addsalewantedcart', salesFunctions.addSaleWantedCart);
 router.get('/getpaymentmethod', salesFunctions.getpayment_method);
+router.get('/deleterecordsoftwoyears', salesFunctions.deleteRecordsOfTwoYears)
 
 //Rutas Imagenes
 router.post('/getimageproduct', uploadImageFunction.getImageProductBase64);
