@@ -218,7 +218,10 @@ salesFunctions.deleteRecordsOfTwoYears = async (req, res) => {
     try{
 
     } catch (error) {
-        
+        res.status(500).json({
+            msg: "No se pudo eliminar los registros.",
+            error: error
+        })
     }
 
 }

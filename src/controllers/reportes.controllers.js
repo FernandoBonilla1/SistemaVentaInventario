@@ -20,20 +20,20 @@ reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-        const return_products = await connection.query('select return.id, return.id_sale, return.id_product, product.name, return.descripcion, return.amount, return.price from return inner join product on (return.id_product = product.id)')
-        const registros = return_products.rows.map((product) => {
+        const return_products = await connection.query('select return.id, return.id_sale as sale, return.id_product as idproduct, product.name as name, return.description as description, return.amount as amount, return.price as price from return inner join product on (return.id_product = product.id)')
+        const registros = return_products.rows.map((return_product) => {
             const registro = {
-                id: product.id,
-                id_sale: product.id_sale,
-                id_product: product.id_product,
-                name: product.name,
-                descripcion: product.descripcion,
-                amount: product.amount,
-                price: `($${product.price})`
+                id: return_product.id,
+                id_sale: return_product.sale,
+                id_product: return_product.idproduct,
+                name: return_product.name,
+                description: return_product.description,
+                amount: return_product.amount,
+                price: `($${return_product.price})`
             }
             return registro
         })
-
+        
         doc.setDocumentHeader({ height: '10' }, () => {
             doc.fontSize(18).text('Reporte de productos devueltos\n', {
                 align: 'center'
@@ -51,15 +51,16 @@ reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
             })
 
         })
-
+        
         doc.addTable([
             { key: 'id', label: 'ID', align: 'left' },
-            { key: 'id_sale', label: 'ID venta', align: 'left' },
+            { key: 'id_sale', label: 'ID Venta', align: 'left' },
             { key: 'id_product', label: 'ID P', align: 'left' },
-            { key: 'name', label: 'Nombre producto', align: 'left' },
-            { key: 'descripcion', label: 'Descripcion', align: 'left' },
-            { key: 'amount', label: 'Cantidad', align: 'left' },
+            { key: 'name', label: 'Nombre Producto', align: 'left' },
+            { key: 'description', label: 'Descripcion', align: 'left' },
+            { key: 'amount', label: 'cantidad', align: 'left' },
             { key: 'price', label: 'Valor', align: 'left' }
+            
         ], registros, {
             border: { size: 0.1, color: '#cdcdcd' },
             width: "fill_body",
@@ -70,7 +71,6 @@ reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
             marginRight: 10,
             headAlign: 'left'
         })
-
         doc.render();
         doc.end();
     } catch (error) {
@@ -392,7 +392,6 @@ reportFunctions.boleta = async (req, res) => {
         });
         doc.render();
         doc.end();
-
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo crear el documento",
@@ -469,7 +468,6 @@ reportFunctions.reporteExistecia = async (req, res) => {
         })
         doc.render();
         doc.end();
-
     } catch (error) {
         res.status(500).json({
             msg: "No se pudo crear el documento",

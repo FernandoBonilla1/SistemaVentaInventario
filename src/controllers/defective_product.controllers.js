@@ -101,8 +101,8 @@ defective_productFunctions.deleteDefectiveProduct = async (req, res) => {
 
 defective_productFunctions.create_Return_Product = async (req, res) => {
     try {
-        const { id_sale, id_product, descripcion, amount } = req.body;
-        if (id_sale == "" || id_product == "" || descripcion == "" || amount == "") {
+        const { id_sale, id_product, description, amount } = req.body;
+        if (id_sale == "" || id_product == "" || description == "" || amount == "") {
             return res.status(400).json({
                 msg: "Debe rellenar los campos."
             })
@@ -140,7 +140,7 @@ defective_productFunctions.create_Return_Product = async (req, res) => {
                                 const update_details = await connection.query("UPDATE details set amount = $1 where id_product = $2 and id_sale = $3", [amount_product, id_product, id_sale])
                                 let amounts = product.rows[0].amount + amount
                                 let price = product.rows[0].value * amount
-                                const return_products = await connection.query("INSERT INTO return(id_sale,id_product,descripcion,amount,price) VALUES ($1,$2,$3,$4,$5)", [id_sale, id_product, descripcion, amount, price])
+                                const return_products = await connection.query("INSERT INTO return(id_sale,id_product,description,amount,price) VALUES ($1,$2,$3,$4,$5)", [id_sale, id_product, description, amount, price])
                                 const update_product = await connection.query('UPDATE product SET amount = $1 WHERE id = $2', [amounts, id_product])
                                 res.status(200).json({
                                     msg: "Se genero una devolucion de producto"
@@ -163,7 +163,7 @@ defective_productFunctions.create_Return_Product = async (req, res) => {
 defective_productFunctions.getreturn_Products = async (req, res) => {
     try {
         const { id_sale } = req.body;
-        const return_products = await connection.query('select return.id, return.id_sale, return.id_product, return.descripcion, product.name, return.price from return inner join product on (product.id = return.id_product) where return.id_sale = $1', [id_sale]);
+        const return_products = await connection.query('select return.id, return.id_sale, return.id_product, return.description, product.name, return.price from return inner join product on (product.id = return.id_product) where return.id_sale = $1', [id_sale]);
         if (return_products.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos devueltos"
