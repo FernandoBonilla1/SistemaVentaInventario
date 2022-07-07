@@ -103,9 +103,17 @@ categoryFunctions.changeStatusCategory = async (req, res) => {
                 });
             } else {
                 const categories1 = await connection.query('UPDATE category SET removed = $1 WHERE id = $2', [removed, id])
-                res.status(200).json({
-                    msg: `Se actualizo el estado de la categoria con id: ${id}`
-                });
+                if(removed){
+                
+                    return res.status(200).json({
+                        msg: `Se actualizo el estado de la categoria con id: ${id}`
+                    });
+                }else{
+                    return res.status(200).json({
+                        msg: `Se actualizo el estado de la categoria con id: ${id}`
+                    });
+                }
+                
             }
         }
     } catch (error) {

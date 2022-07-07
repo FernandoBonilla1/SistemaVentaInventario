@@ -24,6 +24,10 @@ const date = Date.now();
 const hoy = new Date(date);
 const fecha_actual = hoy.toISOString().slice(0,10);
 
+console.log(hoy.toLocaleDateString())
+console.log("")
+console.log(fecha_actual)
+
 /*
 var transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',

@@ -75,8 +75,6 @@ uploadImageFunction.uploadImageCategory = async (req, res) => {
     }
 }
 
-
-
 uploadImageFunction.getImageProductBase64 = async (req, res) => {
     try {
         const { id_product } = req.body;
