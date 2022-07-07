@@ -23,13 +23,20 @@ salesFunctions.getpayment_method = async (req, res) => {
 salesFunctions.getSale = async (req, res) => {
     try {
         const { id } = req.body
-        const sales = await connection.query('Select sale.id as id_sale, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1', [id]);
+        const sales = await connection.query('Select sale.id as id_sale, sale.id_payment_method, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1', [id]);
         if (sales.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos en la venta"
             })
+        } else {
+            if(sales.rows[0].id_payment_method != null){
+                return res.status(200).json({
+                    msg: "No se puede acceder a una boleta que ya fue finalizada"
+                })
+            }
+            res.status(200).json(sales.rows);
         }
-        res.status(200).json(sales.rows);
+        
     } catch (error) {
         res.status(500).json({
             msg: "No se puedieron acceder a la tabla de ventas",
