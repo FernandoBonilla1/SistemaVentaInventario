@@ -24,6 +24,12 @@ functions.getCurrentDate = () => {
     return fecha_actual;
 }
 
+functions.getCurrentDateDDMMYYYY = () => {
+    const date = Date.now();
+    const hoy = new Date(date);
+    const fecha_actual = hoy.toLocaleDateString();
+    return fecha_actual;
+}
 functions.getHtmlForgotPassword = (randomstring) => {
     const html = `<table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#f2f3f8"
     style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">

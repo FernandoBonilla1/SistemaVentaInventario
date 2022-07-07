@@ -104,11 +104,12 @@ categoryFunctions.changeStatusCategory = async (req, res) => {
             } else {
                 const categories1 = await connection.query('UPDATE category SET removed = $1 WHERE id = $2', [removed, id])
                 if(removed){
-                
+                    const subcategorys = await connection.query("UPDATE subcategory SET removed = $1 where id_category = $2",[removed, id])
                     return res.status(200).json({
                         msg: `Se actualizo el estado de la categoria con id: ${id}`
                     });
                 }else{
+                    const subcategorys = await connection.query("UPDATE subcategory SET removed = $1 where id_category = $2",[removed, id])
                     return res.status(200).json({
                         msg: `Se actualizo el estado de la categoria con id: ${id}`
                     });

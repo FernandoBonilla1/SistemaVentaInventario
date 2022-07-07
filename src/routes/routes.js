@@ -50,6 +50,9 @@ router.post('/changestatussubcategory', subCategoryFunctions.changeStatussubCate
 router.post('/defectiveproduct', defective_productFunctions.getDefectiveProduct);
 router.post('/adddefectiveproduct', defective_productFunctions.createDefectiveProduct);
 router.post('/deletedefectiveproduct', defective_productFunctions.deleteDefectiveProduct);
+router.post('/addreturnproduct',defective_productFunctions.create_Return_Product);
+router.post('/getreturnproduct',defective_productFunctions.getreturn_Products);
+router.post('/deletereturnproduct', defective_productFunctions.deleteReturnsProduct);
 
 //Rutas designadas a proveedores
 router.get('/suppliers', supplierFunctions.getSuppliers);
@@ -65,6 +68,7 @@ router.post('/get-boleta', reportFunctions.boleta);
 router.get('/get-reporte-defective-product', reportFunctions.reporte_productos_defectuosos);
 router.get('/get-reporte-ventas-totales-por-precio',reportFunctions.reporte_ventas_totales_por_precio);
 router.get('/get-reporte-ventas-totales-por-cantidad-vendida',reportFunctions.reporte_ventas_totales_por_cantidad_vendida)
+router.get('/get-reporte-productos-devueltos',reportFunctions.reporte_de_productos_devueltos)
 
 //Rutas designada para productos deseados
 router.post('/getwantedcart', wishCart.getWantedCart);

@@ -3,6 +3,84 @@ const PDF = require('pdfkit-construct');
 const functions = require('../helpers/functionshelper');
 const reportFunctions = {}
 
+reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
+    try {
+
+        const doc = new PDF({
+            size: 'A4',
+            margins: { top: 10, left: 10, right: 10, bottom: 10 },
+            bufferPages: true
+        });
+
+        const filename = `Reporte productos revueltos ${Date.now()}.pdf`;
+
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-disposition': `attachment;filename=${filename}`
+        });
+        doc.on('data', (data) => { stream.write(data) });
+        doc.on('end', () => { stream.end() });
+        const return_products = await connection.query('select return.id, return.id_sale, return.id_product, product.name, return.descripcion, return.amount, return.price from return inner join product on (return.id_product = product.id)')
+        const registros = return_products.rows.map((product) => {
+            const registro = {
+                id: product.id,
+                id_sale: product.id_sale,
+                id_product: product.id_product,
+                name: product.name,
+                descripcion: product.descripcion,
+                amount: product.amount,
+                price: `($${product.price})`
+            }
+            return registro
+        })
+
+        doc.setDocumentHeader({ height: '10' }, () => {
+            doc.fontSize(18).text('Reporte de productos devueltos\n', {
+                align: 'center'
+            });
+
+            doc.fontSize(12);
+
+            doc.text('EMPRESA: MACACO', {
+                marginLeft: 150,
+                align: 'left'
+            })
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDateDDMMYYYY()}`, {
+                marginLeft: 100,
+                align: 'left'
+            })
+
+        })
+
+        doc.addTable([
+            { key: 'id', label: 'ID', align: 'left' },
+            { key: 'id_sale', label: 'ID venta', align: 'left' },
+            { key: 'id_product', label: 'ID P', align: 'left' },
+            { key: 'name', label: 'Nombre producto', align: 'left' },
+            { key: 'descripcion', label: 'Descripcion', align: 'left' },
+            { key: 'amount', label: 'Cantidad', align: 'left' },
+            { key: 'price', label: 'Valor', align: 'left' }
+        ], registros, {
+            border: { size: 0.1, color: '#cdcdcd' },
+            width: "fill_body",
+            striped: false,
+            stripedColors: ["#f6f6f6", "#d6c4dd"],
+            cellsPadding: 10,
+            marginLeft: 10,
+            marginRight: 10,
+            headAlign: 'left'
+        })
+
+        doc.render();
+        doc.end();
+    } catch (error) {
+        res.status(500).json({
+            msg: "No se pudo crear el documento",
+            error: error
+        })
+    }
+}
+
 reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
     try {
 
@@ -43,7 +121,7 @@ reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDateDDMMYYYY()}`, {
                 marginLeft: 100,
                 align: 'left'
             })
@@ -116,7 +194,7 @@ reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) =
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDateDDMMYYYY()}`, {
                 marginLeft: 100,
                 align: 'left'
             })
@@ -190,7 +268,7 @@ reportFunctions.reporte_productos_defectuosos = async (req, res) => {
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDateDDMMYYYY()}`, {
                 marginLeft: 100,
                 align: 'left'
             })
@@ -284,7 +362,7 @@ reportFunctions.boleta = async (req, res) => {
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE VENTA: ${functions.getCurrentDate()}`, {
+            doc.text(`FECHA DE VENTA: ${functions.getCurrentDateDDMMYYYY()}`, {
                 marginLeft: 150,
                 margins: 200,
                 align: 'left'
@@ -365,7 +443,7 @@ reportFunctions.reporteExistecia = async (req, res) => {
                 marginLeft: 150,
                 align: 'left'
             })
-            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDate()}`, {
+            doc.text(`FECHA DE REPORTE: ${functions.getCurrentDateDDMMYYYY()}`, {
                 marginLeft: 100,
                 align: 'left'
             })

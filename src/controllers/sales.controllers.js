@@ -214,5 +214,13 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
     }
 }
 
+salesFunctions.deleteRecordsOfTwoYears = async (req, res) => {
+    try{
+
+    } catch (error) {
+        
+    }
+
+}
 
 module.exports = salesFunctions
