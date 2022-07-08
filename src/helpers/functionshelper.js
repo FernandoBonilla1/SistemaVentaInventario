@@ -2,7 +2,7 @@ const credenciales = require("../credencialesgmail.json")
 
 const functions = {}
 
-functions.generateRandomString = (num) => {
+functions.generateRandomString = (num) => { //Se crea un string random con cantidad de caracteres definidas
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result1 = ' ';
     const charactersLength = characters.length;
@@ -13,24 +13,24 @@ functions.generateRandomString = (num) => {
     return result1;
 }
 
-functions.capitalizarPrimeraLetra = (str) => {
+functions.capitalizarPrimeraLetra = (str) => {  //Se capitaliza un string
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-functions.getCurrentDate = () => {
+functions.getCurrentDate = () => { //Se obtiene la fecha en formato YYYY-MM-DD
     const date = Date.now();
     const hoy = new Date(date);
     const fecha_actual = hoy.toISOString().slice(0,10);
     return fecha_actual;
 }
 
-functions.getCurrentDateDDMMYYYY = () => {
+functions.getCurrentDateDDMMYYYY = () => { //Se obtiene la fecha en formado DD-MM-YYYY
     const date = Date.now();
     const hoy = new Date(date);
     const fecha_actual = hoy.toLocaleDateString();
     return fecha_actual;
 }
-functions.getHtmlForgotPassword = (randomstring) => {
+functions.getHtmlForgotPassword = (randomstring) => { //Formato correo para reiniciar contraseña
     const html = `<table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#f2f3f8"
     style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
     <tr>
@@ -82,7 +82,7 @@ functions.getHtmlForgotPassword = (randomstring) => {
     return html
 }
 
-functions.getCreateNewEmployee = (randomstring) => {
+functions.getCreateNewEmployee = (randomstring) => { //Formato correo para nuevos funcionarios
     const html = `<table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#f2f3f8"
     style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
     <tr>

@@ -3,7 +3,7 @@ const PDF = require('pdfkit-construct');
 const functions = require('../helpers/functionshelper');
 const reportFunctions = {}
 
-reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
+reportFunctions.reporte_de_productos_devueltos = async (req, res) => { //Se genera un pdf con los productos devueltos por los clientes
     try {
 
         const doc = new PDF({
@@ -21,8 +21,8 @@ reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
         let get_return_products = 'select return.id, return.id_sale as sale, return.id_product as idproduct, product.name as name, return.description as description, return.amount as amount, return.price as price from return inner join product on (return.id_product = product.id)'
-        const return_products = await connection.query(get_return_products)
-        const registros = return_products.rows.map((return_product) => {
+        const return_products = await connection.query(get_return_products) //Se obtienen los productos devueltos
+        const registros = return_products.rows.map((return_product) => { //Se crea el array
             const registro = {
                 id: return_product.id,
                 id_sale: return_product.sale,
@@ -82,7 +82,7 @@ reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
     }
 }
 
-reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
+reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => { //Se crea un pdf de las ventas totales ordenadas por cual vendio mas por precio
     try {
 
         const doc = new PDF({
@@ -100,8 +100,8 @@ reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
         let get_sale = 'select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by total desc'
-        const sales = await connection.query(get_sale)
-        const registros = sales.rows.map((sale) => {
+        const sales = await connection.query(get_sale) //Se obtienen las ventas totales por ventas y productos
+        const registros = sales.rows.map((sale) => { //Se crea el array
             const registro = {
                 id: sale.id,
                 name: sale.name,
@@ -155,7 +155,7 @@ reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
     }
 }
 
-reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) => {
+reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) => { //Se crea el pdf de ventas totales por cantidad
     try {
 
         const doc = new PDF({
@@ -173,7 +173,7 @@ reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) =
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
         let get_sale = 'select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by details.amount desc'
-        const sales = await connection.query(get_sale)
+        const sales = await connection.query(get_sale) //Se obtienen las ventas y los productos
         const registros = sales.rows.map((sale) => {
             const registro = {
                 id: sale.id,
@@ -228,7 +228,7 @@ reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) =
     }
 }
 
-reportFunctions.reporte_productos_defectuosos = async (req, res) => {
+reportFunctions.reporte_productos_defectuosos = async (req, res) => { //Se obtiene el pdf de reporte de productos defectuosos
     try {
         const doc = new PDF({
             size: 'A4',
@@ -245,8 +245,8 @@ reportFunctions.reporte_productos_defectuosos = async (req, res) => {
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
         let get_defective_product = 'Select defective_product.id, sale.id as idventa, sale.date as fecha, product.id as idproducto, product.name as nombreproducto, defective_product.descripcion, defective_product.amount as amount from defective_product inner join sale on (sale.id = defective_product.id_sale) inner join product on (defective_product.id_product = product.id)'
-        const defective_products = await connection.query(get_defective_product)
-        const registros = defective_products.rows.map((defective_product) => {
+        const defective_products = await connection.query(get_defective_product) //Se obtiene la tabla productos defectuosos
+        const registros = defective_products.rows.map((defective_product) => { //Se obtiene el array
             const registro = {
                 id: defective_product.id,
                 idventa: defective_product.idventa,
@@ -303,7 +303,7 @@ reportFunctions.reporte_productos_defectuosos = async (req, res) => {
     }
 }
 
-reportFunctions.boleta = async (req, res) => {
+reportFunctions.boleta = async (req, res) => { //Se obtiene un pdf de la boleta de una venta
 
     try {
         const { id } = req.body;
@@ -322,14 +322,14 @@ reportFunctions.boleta = async (req, res) => {
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
         let get_sale = 'Select users.name as nombrevendedor, client.rut as rutcliente, client.name as nombrecliente, client.surname as apellidocliente, sale.id as id_sale, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) inner join users on (users.rut = sale.id_salesman) inner join users as client on (client.rut = sale.id_cliente) WHERE sale.id = $1'
-        const ventas = await connection.query( get_sale, [id])
+        const ventas = await connection.query( get_sale, [id]) //Se obtiene la venta por id
         const nombre_vendedor = ventas.rows[0].nombrevendedor
         const rut_cliente = ventas.rows[0].rutcliente
         const nombre_cliente = ventas.rows[0].nombrecliente
         const id_venta = ventas.rows[0].id_sale
         const apellido_cliente = ventas.rows[0].apellidocliente
-        const total = ventas.rows.map(sale => sale.price).reduce((prev, curr) => prev + curr, 0);
-        const registros = ventas.rows.map((venta) => {
+        const total = ventas.rows.map(sale => sale.price).reduce((prev, curr) => prev + curr, 0); //Suma el total de todos los productos de la venta
+        const registros = ventas.rows.map((venta) => {  //Se crea el array
             const registro = {
                 id: venta.id_product,
                 name: venta.nombre,
@@ -402,7 +402,7 @@ reportFunctions.boleta = async (req, res) => {
 
 }
 
-reportFunctions.reporteExistecia = async (req, res) => {
+reportFunctions.reporteExistecia = async (req, res) => { //Se crea un pdf con el reporte de existencia
     try {
         const doc = new PDF({
             size: 'A4',
@@ -419,8 +419,8 @@ reportFunctions.reporteExistecia = async (req, res) => {
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
         let get_product = 'SELECT product.id, product.name, product.brand, product.description, product.amount, product.value, subcategory.name as subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)'
-        const products = await connection.query(get_product)
-        const registros = products.rows.map((product) => {
+        const products = await connection.query(get_product) //Se obtiene el producto
+        const registros = products.rows.map((product) => { //Se obtiene el array
             const registro = {
                 id: product.id,
                 subcategory: product.subcategory,

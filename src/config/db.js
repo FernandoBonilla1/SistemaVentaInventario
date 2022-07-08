@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const credentials = require('./credencialdb.json')
 
-const connection = new Pool({
+const connection = new Pool({ //Datos para conecta la base de datos
     host: credentials.host,
     user: credentials.user,
     password: credentials.password,
@@ -12,7 +12,7 @@ const connection = new Pool({
     } 
 });
 
-connection.connect((error) =>{
+connection.connect((error) =>{  //Se verifica la conexion a la base de datos
     if(error){
       console.log('El error de conexion es: ' + error);
       return;
