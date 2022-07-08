@@ -130,7 +130,7 @@ reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
         })
 
         doc.addTable([
-            { key: 'id', label: 'ID Venta', align: 'left' },
+            { key: 'id', label: 'ID Producto', align: 'left' },
             { key: 'name', label: 'Nombre Producto', align: 'left' },
             { key: 'amount', label: 'Cantidad', align: 'left' },
             { key: 'total', label: 'Total', align: 'left' }
@@ -203,7 +203,7 @@ reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) =
         })
 
         doc.addTable([
-            { key: 'id', label: 'ID Venta', align: 'left' },
+            { key: 'id', label: 'ID Producto', align: 'left' },
             { key: 'name', label: 'Nombre Producto', align: 'left' },
             { key: 'amount', label: 'Cantidad', align: 'left' },
             { key: 'total', label: 'Total', align: 'left' }
