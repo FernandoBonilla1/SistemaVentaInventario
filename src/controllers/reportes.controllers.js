@@ -131,8 +131,8 @@ reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
 
         doc.addTable([
             { key: 'id', label: 'ID Venta', align: 'left' },
-            { key: 'name', label: 'ID metodo pago', align: 'left' },
-            { key: 'amount', label: 'Fecha', align: 'left' },
+            { key: 'name', label: 'Nombre Producto', align: 'left' },
+            { key: 'amount', label: 'Cantidad', align: 'left' },
             { key: 'total', label: 'Total', align: 'left' }
         ], registros, {
             border: { size: 0.1, color: '#cdcdcd' },
@@ -204,8 +204,8 @@ reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) =
 
         doc.addTable([
             { key: 'id', label: 'ID Venta', align: 'left' },
-            { key: 'name', label: 'ID metodo pago', align: 'left' },
-            { key: 'amount', label: 'Fecha', align: 'left' },
+            { key: 'name', label: 'Nombre Producto', align: 'left' },
+            { key: 'amount', label: 'Cantidad', align: 'left' },
             { key: 'total', label: 'Total', align: 'left' }
         ], registros, {
             border: { size: 0.1, color: '#cdcdcd' },
