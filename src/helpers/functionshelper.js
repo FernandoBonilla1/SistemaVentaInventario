@@ -54,8 +54,8 @@ functions.getHtmlForgotPassword = (randomstring) => {
                                         style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                     <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
                                         No podemos simplemente enviarle su antigua contraseña. Se ha generado para usted una nueva
-                                        contraseña. Para restablecer su contraseña a una que usted escoja. Debe ingresar con el 
-                                        el codigo que le entregamos a continuación a su secion y en su perfil modificar la contraseña a una que
+                                        contraseña. Para restablecer su contraseña a una que usted escoja. Debe ingresar con  
+                                        el codigo que le entregamos a continuación a su sesión y en su perfil modificar la contraseña a una que
                                         a usted le acomode. 
                                     </p>
                                     <br>

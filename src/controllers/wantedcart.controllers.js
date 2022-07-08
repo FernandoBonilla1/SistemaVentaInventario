@@ -4,13 +4,15 @@ const wishCart = {}
 wishCart.getWantedCart = async (req, res) => {
     try {
         const { rut } = req.body;
-        const user = await connection.query('select * from users where users.rut = $1', [rut])
+        let get_user = 'select * from users where users.rut = $1'
+        const user = await connection.query( get_user, [rut])
         if (user.rows.length === 0) {
             return res.status(200).json({
                 msg: "El usuario no existe"
             })
         }
-        const wantedcart = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, users.confirmcart as confirmcart from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1', [rut]);
+        let get_wishcart_user = 'select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, users.confirmcart as confirmcart from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1'
+        const wantedcart = await connection.query( get_wishcart_user, [rut]);
         if (wantedcart.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos en tu lista de deseados"
@@ -28,7 +30,8 @@ wishCart.getWantedCart = async (req, res) => {
 wishCart.addProductWantedCart = async (req, res) => {
     try {
         const { rut, id_product, amount } = req.body;
-        const user = await connection.query('select * from users where users.rut = $1', [rut])
+        let get_user_rut = 'select * from users where users.rut = $1'
+        const user = await connection.query( get_user_rut, [rut])
         if (user.rows[0].confirmcart) {
             res.status(400).json({
                 msg: "No puede ingresar productos a un carrito confirmado"
@@ -39,15 +42,18 @@ wishCart.addProductWantedCart = async (req, res) => {
                     msg: "No puede ingresar valores negativos."
                 })
             } else {
-                const product1 = await connection.query("Select * from product where product.id = $1", [id_product])
+                let get_product_id = "Select * from product where product.id = $1"
+                const product1 = await connection.query( get_product_id, [id_product])
                 if (product1.rows.length === 0) {
                     return res.status(200).json({
                         msg: "No existe el producto"
                     })
                 }
-                const product2 = await connection.query('select * from wantedcart inner join product on (wantedcart.id_product = product.id) where wantedcart.id_product = $1 and wantedcart.rut_user = $2', [id_product, rut])
+                let get_wantedcart = 'select * from wantedcart inner join product on (wantedcart.id_product = product.id) where wantedcart.id_product = $1 and wantedcart.rut_user = $2'
+                const product2 = await connection.query( get_wantedcart, [id_product, rut])
                 if (product2.rows.length === 0) {
-                    const product3 = await connection.query('INSERT INTO wantedcart(rut_user, id_product, amount) VALUES($1,$2,$3)', [rut, id_product, amount])
+                    const insert_product = 'INSERT INTO wantedcart(rut_user, id_product, amount) VALUES($1,$2,$3)'
+                    const product3 = await connection.query( insert_product, [rut, id_product, amount])
                     return res.status(200).json({
                         msg: `Se logro agregar el producto al carrito id: ${id_product}`
                     });
@@ -75,7 +81,8 @@ wishCart.ModifyWantedCart = async (req, res) => {
                 msg: "No puede ingresar valores negativos."
             })
         } else {
-            const product = await connection.query('UPDATE wantedcart SET amount = $1 WHERE rut_user = $2 and id_product = $3', [amount, rut, id_product])
+            let update_wantedcart = 'UPDATE wantedcart SET amount = $1 WHERE rut_user = $2 and id_product = $3'
+            const product = await connection.query( update_wantedcart, [amount, rut, id_product])
             res.status(200).json({
                 msg: `Se actualizo la cantidad del producto`
             });
@@ -96,19 +103,22 @@ wishCart.deleteProductWantedCart = async (req, res) => {
                 msg: "Debe especificar el producto"
             })
         } else {
-            const user = await connection.query('select * from users where users.rut = $1', [rut])
+            let get_user_rut = 'select * from users where users.rut = $1'
+            const user = await connection.query( get_user_rut, [rut])
             if (user.rows[0].confirmcart) {
                 res.status(400).json({
                     msg: "No puede eliminar productos a un carrito confirmado"
                 })
             } else {
-                const product1 = await connection.query('select * from wantedcart inner join product on (wantedcart.id_product = product.id) where wantedcart.id_product = $1 and wantedcart.rut_user = $2', [id_product, rut])
+                let get_wantedcart = 'select * from wantedcart inner join product on (wantedcart.id_product = product.id) where wantedcart.id_product = $1 and wantedcart.rut_user = $2'
+                const product1 = await connection.query( get_wantedcart, [id_product, rut])
                 if (product1.rows.length === 0) {
                     return res.status(200).json({
                         msg: "No existe el producto en la lista"
                     })
                 }
-                const product2 = await connection.query('DELETE FROM wantedcart WHERE rut_user = $1 and id_product = $2', [rut, id_product]);
+                let delete_product = 'DELETE FROM wantedcart WHERE rut_user = $1 and id_product = $2'
+                const product2 = await connection.query( delete_product, [rut, id_product]);
                 res.status(200).json({
                     msg: `Se elimino el producto de la lista de deseados.`
                 })
@@ -125,13 +135,15 @@ wishCart.deleteProductWantedCart = async (req, res) => {
 wishCart.modifystateWantedCart = async (req, res) => {
     try {
         const { rut, confirmcart } = req.body;
-        const user = await connection.query('select * from users where users.rut = $1', [rut])
+        let get_user_rut = 'select * from users where users.rut = $1'
+        const user = await connection.query( get_user_rut, [rut])
         if (user.rows.length === 0) {
             return res.status(200).json({
                 msg: "El usuario no existe"
             })
         }
-        const verifycart = await connection.query('UPDATE users SET confirmcart = $1 WHERE rut = $2', [confirmcart, rut])
+        let update_confirmcart = 'UPDATE users SET confirmcart = $1 WHERE rut = $2'
+        const verifycart = await connection.query( update_confirmcart, [confirmcart, rut])
         res.status(200).json({
             msg: `Se modifico el estado del carrito del usuario con rut: ${rut}`
         })

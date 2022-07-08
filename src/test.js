@@ -20,34 +20,7 @@ functions.generateRandomString = (num) => {
 //var text1 = "aaaaaa"
 //console.log(text1.toUpperCase());
 
-const deleteRegisterOld = async (req, res) => {
-  try {
-    const sales = await connection.query("Select sale.id, sale.date from sale")
-    const date = functions.getCurrentDate()
-    const currentDate = new Date(date);
-    const division = date.split('-')
-    const anno = division[0] - 2
-    const dateTwoYearBefore = new Date(`${anno}-${division[1]}-${division[2]}`)
-    const registros = sales.map((sale) => {
-      const registro = {
-          id: sale.id,
-          id_sale: new Date(sale.date)
-      }
-      return registro
-  })
 
-  console.log(registros)
-    
-
-  } catch (error) {
-    res.status(500).json({
-      msg: "No se pudo eliminar los registros.",
-      error: error
-    })
-  }
-}
-
-deleteRegisterOld();
 
 /*
 var transporter = nodemailer.createTransport({

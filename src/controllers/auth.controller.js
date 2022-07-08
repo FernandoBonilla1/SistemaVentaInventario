@@ -28,12 +28,14 @@ authFunctions.register = async (req, res) => {
                 msg: "Debe rellenar todos los campos obligatorios"
             })
         } else {
-            const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
+            let get_user_id = 'SELECT * FROM users WHERE rut = $1'
+            const users = await connection.query( get_user_id, [rut]);
             const banned = false;
             const hashedPassword = await bcryptjs.hash(password, 10);
             //Detecta si el rut ingresado es correcto
             if (users.rows.length === 0) {
-                const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,Role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [rut, name, surname, hashedPassword, email, address, phone, city, banned, 1]);
+                let insert_client = `INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,Role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`
+                const newUser = await connection.query(insert_client, [rut, name, surname, hashedPassword, email, address, phone, city, banned, 1]);
                 res.status(200).json({
                     msg: `Se logro crear el cliente con rut: ${rut}`
                 });
@@ -64,13 +66,16 @@ authFunctions.registerFuncionario = async (req, res) => {
                     msg: "Debe rellenar todos los campos obligatorios"
                 })
             } else {
-                const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
+                let get_user_id = 'SELECT * FROM users WHERE rut = $1'
+                const users = await connection.query( get_user_id, [rut]);
                 const banned = false;
                 if (users.rows.length === 0) {
                     const randomstring = functions.generateRandomString(15).trim();
                     const hashedPassword = await bcryptjs.hash(randomstring, 10);
-                    const newUser = await connection.query(`INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`, [rut, name, surname, hashedPassword, email, address, phone, city, banned, Role]);
-                    const newEmployee = await connection.query("select * from users where rut = $1",[rut])
+                    let insert_user = `INSERT INTO users(rut,name,surname,password,email,address,phone,city,banned,role) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`
+                    const newUser = await connection.query( insert_user, [rut, name, surname, hashedPassword, email, address, phone, city, banned, Role]);
+                    let get_user = "select * from users where rut = $1"
+                    const newEmployee = await connection.query( get_user,[rut])
                     
                     var mailOptions = {
                         from: credentials.email, 
@@ -91,7 +96,8 @@ authFunctions.registerFuncionario = async (req, res) => {
                     });
                     
                 } else {
-                    const newUser = await connection.query(`UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6, banned = $7, role = $8 Where rut = $9`, [name, surname, email, address, phone, city, banned, Role, rut])
+                    let update_user = `UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6, banned = $7, role = $8 Where rut = $9`
+                    const newUser = await connection.query(update_user, [name, surname, email, address, phone, city, banned, Role, rut])
                     return res.status(200).json({
                         msg: "Se actualizaron los datos del funcionario"
                     });
@@ -109,7 +115,8 @@ authFunctions.registerFuncionario = async (req, res) => {
 authFunctions.login = async (req, res) => {
     try {
         const { rut, password } = req.body;
-        const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
+        let get_user_id = 'SELECT * FROM users WHERE rut = $1'
+        const users = await connection.query( get_user_id, [rut]);
         //Detecta si el rut ingresado es correcto
         if (users.rows.length === 0) {
             return res.status(400).json({
@@ -148,7 +155,8 @@ authFunctions.login = async (req, res) => {
 authFunctions.loginFuncionario = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const users = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
+        let get_user_email = 'SELECT * FROM users WHERE email = $1'
+        const users = await connection.query( get_user_email, [email]);
         //Detecta si el rut ingresado es correcto
         if (users.rows.length === 0) {
             return res.status(400).json({
@@ -188,7 +196,8 @@ authFunctions.loginFuncionario = async (req, res) => {
 authFunctions.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body
-        const user = await connection.query("Select * from users where email = $1", [email]);
+        let get_user_email = "Select * from users where email = $1"
+        const user = await connection.query( get_user_email, [email]);
         if (user.rows.length === 0) {
             return res.status(400).json({
                 msg: "No hay usuario registrado con este correo"
@@ -197,7 +206,8 @@ authFunctions.forgotPassword = async (req, res) => {
             
             const randomstring = functions.generateRandomString(15).trim();
             const hashedPassword = await bcryptjs.hash(randomstring, 10);
-            const userupdate = connection.query("Update users set password = $1 where email = $2",[hashedPassword,email])
+            let update_user = "Update users set password = $1 where email = $2"
+            const userupdate = connection.query(update_user,[hashedPassword,email])
 
             var mailOptions = {
                 from: credentials.email, 
@@ -227,7 +237,8 @@ authFunctions.forgotPassword = async (req, res) => {
 authFunctions.resetPassword = async (req, res) => {
     try{
         const { rut, password, newpassword } = req.body
-        const users = await connection.query('SELECT * FROM users WHERE rut = $1', [rut]);
+        let get_user_id = 'SELECT * FROM users WHERE rut = $1'
+        const users = await connection.query( get_user_id, [rut]);
         if(users.rows.length === 0){
             res.status(400).json({
                 msg: "El usuario no existe"
@@ -240,7 +251,8 @@ authFunctions.resetPassword = async (req, res) => {
                 })
             }else{
                 const hashedPassword = await bcryptjs.hash(newpassword, 10);
-                const users1 = await connection.query("Update users set password = $1 where rut = $2",[hashedPassword,rut]);
+                let user_update = "Update users set password = $1 where rut = $2"
+                const users1 = await connection.query( user_update,[hashedPassword,rut]);
                 res.status(200).json({
                     msg: "Se logro establecer una nueva contraseña"
                 })

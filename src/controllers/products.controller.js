@@ -4,7 +4,8 @@ const productFunctions = {};
 
 productFunctions.getProductwithStockMin = async (req, res) => {
     try {
-        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url, product.stockmin as stockmin from product INNER join subcategory on (product.id_subcategory = subcategory.id) where (product.amount <= product.stockmin) ');
+        let get_product = 'select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url, product.stockmin as stockmin from product INNER join subcategory on (product.id_subcategory = subcategory.id) where (product.amount <= product.stockmin) '
+        const product = await connection.query(get_product);
         if (product.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos con stockmin"
@@ -23,7 +24,8 @@ productFunctions.getProductwithStockMin = async (req, res) => {
 
 productFunctions.getRandomProducts = async (req, res) => {
     try {
-        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) order by random() limit 6');
+        let get_product = 'select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) order by random() limit 6'
+        const product = await connection.query(get_product);
         if (product.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos"
@@ -41,7 +43,8 @@ productFunctions.getRandomProducts = async (req, res) => {
 productFunctions.getRandomProductCategory = async (req, res) => {
     try {
         const { id_category } = req.body
-        const product = await connection.query('select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) where subcategory.id_category = $1 order by random() limit 4', [id_category]);
+        let get_product = 'select product.id, product.name, product.description, product.amount, product.value, product.id_subcategory as subcategory, subcategory.id_category as category, product.url  from product INNER join subcategory on (product.id_subcategory = subcategory.id) where subcategory.id_category = $1 order by random() limit 4'
+        const product = await connection.query( get_product, [id_category]);
         if (product.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos"
@@ -58,7 +61,8 @@ productFunctions.getRandomProductCategory = async (req, res) => {
 
 productFunctions.getProducts = async (req, res) => {
     try {
-        const products = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)');
+        let get_product = 'SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)'
+        const products = await connection.query( get_product);
         if (products.rows.length === 0) {
             res.status(200).json({
                 msg: "No hay productos"
@@ -79,7 +83,8 @@ productFunctions.getProductwithcategorys = async (req, res) => {
     try {
         const { id_category, id_subcategory } = req.body;
         if (id_category == undefined && id_subcategory == undefined) {
-            const products1 = await connection.query('SELECT * FROM product');
+            let get_product = 'SELECT * FROM product'
+            const products1 = await connection.query(get_product);
             if (products1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "No hay productos"
@@ -88,7 +93,8 @@ productFunctions.getProductwithcategorys = async (req, res) => {
             return res.status(200).json(products1.rows);
         } else {
             if (id_subcategory == undefined) {
-                const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1', [id_category])
+                let get_product1 = 'SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1'
+                const products1 = await connection.query( get_product1, [id_category])
                 if (products1.rows.length === 0) {
                     return res.status(200).json({
                         msg: "No hay productos"
@@ -97,7 +103,8 @@ productFunctions.getProductwithcategorys = async (req, res) => {
                 return res.status(200).json(products1.rows);
             } else {
                 if (id_category == undefined) {
-                    const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where subcategory.id = $1', [id_subcategory])
+                    let get_product2 = 'SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where subcategory.id = $1'
+                    const products1 = await connection.query( get_product2, [id_subcategory])
                     if (products1.rows.length === 0) {
                         return res.status(200).json({
                             msg: "No hay productos"
@@ -105,7 +112,8 @@ productFunctions.getProductwithcategorys = async (req, res) => {
                     }
                     return res.status(200).json(products1.rows);
                 } else {
-                    const products = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1 and subcategory.id = $2', [id_category, id_subcategory])
+                    let get_product3 = 'SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where category.id = $1 and subcategory.id = $2'
+                    const products = await connection.query( get_product3, [id_category, id_subcategory])
                     if (products.rows.length === 0) {
                         return res.status(200).json({
                             msg: "No hay productos"
@@ -126,7 +134,8 @@ productFunctions.getProductwithcategorys = async (req, res) => {
 productFunctions.selectProduct = async (req, res) => {
     try {
         const { id_product, id_category, id_subcategory } = req.body;
-        const products1 = await connection.query('SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as idcategory, subcategory.id as idsubcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where product.id = $1 and category.id = $2 and subcategory.id = $3', [id_product, id_category, id_subcategory])
+        let get_select_product = 'SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as idcategory, subcategory.id as idsubcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) Where product.id = $1 and category.id = $2 and subcategory.id = $3'
+        const products1 = await connection.query( get_select_product, [id_product, id_category, id_subcategory])
         if (products1.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos"
@@ -145,7 +154,8 @@ productFunctions.searchProduct = async (req, res) => {
     try {
         const { name } = req.body;
         nameCapitalize = functions.capitalizarPrimeraLetra(name);
-        const products = await connection.query(`SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`);
+        let search_product = `SELECT product.id, product.name, product.year, product.brand, product.description, product.amount, product.stockmin, product.value, product.removed, product.url, category.id as id_category, subcategory.id as id_subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category) WHERE product.name LIKE '${nameCapitalize}%'`
+        const products = await connection.query( search_product);
         if (products.rows.length === 0) {
             return res.status(200).json({
                 msg: "El producto no existe."
@@ -175,7 +185,8 @@ productFunctions.createProduct = async (req, res) => {
                     msg: "No puede ingresar valores negativos."
                 });
             } else {
-                const product = await connection.query('INSERT INTO product(name,year,brand,description,amount,stockmin,value,id_subcategory,id_supplier,removed) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', [name, year, brand, description, amount, stockmin, value, id_subcategory, id_supplier, removed])
+                let insert_product = 'INSERT INTO product(name,year,brand,description,amount,stockmin,value,id_subcategory,id_supplier,removed) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)'
+                const product = await connection.query( insert_product, [name, year, brand, description, amount, stockmin, value, id_subcategory, id_supplier, removed])
                 res.status(200).json({
                     msg: `Se logro crear el producto con nombre: ${name}`
                 });
@@ -207,7 +218,8 @@ productFunctions.changeStock = async (req, res) => {
                         msg: "No puede ingresar stock menor a cero."
                     })
                 } else {
-                    const product = await connection.query('UPDATE product SET amount = $1 WHERE id = $2', [amount, id])
+                    let update_product = 'UPDATE product SET amount = $1 WHERE id = $2'
+                    const product = await connection.query( update_product, [amount, id])
                     res.status(200).json({
                         msg: `Se actualizo la cantidad al producto con id: ${id}`
                     });
@@ -235,13 +247,15 @@ productFunctions.modifyProduct = async (req, res) => {
                     msg: "No puede ingresar estos valores."
                 })
             } else {
-                const product1 = await connection.query("Select * from product where id = $1", [id])
+                let get_product_id = "Select * from product where id = $1"
+                const product1 = await connection.query( get_product_id, [id])
                 if (product1.rows.length === 0) {
                     return res.status(200).json({
                         msg: "El producto no existe"
                     });
                 } else {
-                    const product = await connection.query('UPDATE product SET year = $1, brand = $2, description = $3, amount = $4, value = $5, name = $6, stockmin = $7 WHERE id = $8', [year, brand, description, amount, value, name, stockmin, id])
+                    let update_product = 'UPDATE product SET year = $1, brand = $2, description = $3, amount = $4, value = $5, name = $6, stockmin = $7 WHERE id = $8'
+                    const product = await connection.query( update_product, [year, brand, description, amount, value, name, stockmin, id])
                     res.status(200).json({
                         msg: `Se ha actualizo el producto`
                     });
@@ -264,13 +278,15 @@ productFunctions.deleteProduct = async (req, res) => {
                 msg: "Debe especificar el producto"
             })
         } else {
-            const product1 = await connection.query("Select * from product where id = $1", [id])
+            let get_product = "Select * from product where id = $1"
+            const product1 = await connection.query( get_product, [id])
             if (product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "No existe el producto"
                 });
             } else {
-                const product2 = await connection.query('DELETE FROM product WHERE id = $1', [id]);
+                let delete_product = 'DELETE FROM product WHERE id = $1'
+                const product2 = await connection.query( delete_product, [id]);
                 res.status(200).json({
                     msg: `Se elimino el producto con id: ${id}`
                 })
@@ -294,13 +310,15 @@ productFunctions.changeStatus = async (req, res) => {
                 msg: "Debe especificar el producto para removerlo"
             })
         } else {
-            const product1 = await connection.query("Select * from product where id = $1", [id]);
+            let get_product_id = "Select * from product where id = $1"
+            const product1 = await connection.query( get_product_id, [id]);
             if (product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El producto no existe"
                 });
             } else {
-                const product = await connection.query('UPDATE product SET removed = $1 WHERE id = $2', [removed, id])
+                let update_product = 'UPDATE product SET removed = $1 WHERE id = $2'
+                const product = await connection.query( update_product, [removed, id])
                 res.status(200).json({
                     msg: `Se actualizo el estado del producto con id: ${id}`
                 });

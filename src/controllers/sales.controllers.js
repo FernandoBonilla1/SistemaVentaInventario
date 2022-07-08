@@ -5,7 +5,8 @@ const salesFunctions = {}
 
 salesFunctions.getpayment_method = async (req, res) => {
     try {
-        const payment_method = await connection.query('SELECT * FROM payment_method');
+        let get_payment_method = 'SELECT * FROM payment_method'
+        const payment_method = await connection.query(get_payment_method);
         if (payment_method.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay metodos de pago"
@@ -23,7 +24,8 @@ salesFunctions.getpayment_method = async (req, res) => {
 salesFunctions.getSale = async (req, res) => {
     try {
         const { id } = req.body
-        const sales = await connection.query('Select sale.id as id_sale, sale.id_cliente as cliente, sale.id_payment_method, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1', [id]);
+        let get_sale = 'Select sale.id as id_sale, sale.id_cliente as cliente, sale.id_payment_method, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) WHERE sale.id = $1'
+        const sales = await connection.query( get_sale, [id]);
         if (sales.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay productos en la venta"
@@ -52,13 +54,15 @@ salesFunctions.addSale = async (req, res) => {
         const cant = await connection.query('SELECT count(*) from sale')
         const id = `${functions.generateRandomString(7) + cant.rows[0].count}`
         const id_sale = id.trim()
-        const client = await connection.query("select * from users where rut = $1", [id_cliente]);
+        let get_user_rut = "select * from users where rut = $1"
+        const client = await connection.query( get_user_rut, [id_cliente]);
         if (client.rows.length === 0) {
             return res.status(400).json({
                 msg: "El cliente no existe"
             })
         }
-        const sale = await connection.query('INSERT INTO sale(id,id_cliente,id_salesman,date) VALUES($1,$2,$3,$4)', [id_sale, id_cliente, id_salesman, fecha_actual]);
+        let insert_sale = 'INSERT INTO sale(id,id_cliente,id_salesman,date) VALUES($1,$2,$3,$4)'
+        const sale = await connection.query( insert_sale, [id_sale, id_cliente, id_salesman, fecha_actual]);
         res.status(200).json({
             id: id_sale,
             rut_cliente: id_cliente
@@ -78,19 +82,22 @@ salesFunctions.removeProductToSale = async (req, res) => {
                 msg: "Debe especificar el producto"
             })
         } else {
-            const product1 = await connection.query('SELECT * FROM details Where id_sale = $1 and id_product = $2', [id, id_product]);
+            let get_details = 'SELECT * FROM details Where id_sale = $1 and id_product = $2'
+            const product1 = await connection.query( get_details, [id, id_product]);
             if (product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El producto no esta en la venta"
                 })
             } else {
-                const sale = await connection.query("Select * from sale where id = $1", [id]);
+                let get_sale_id = "Select * from sale where id = $1"
+                const sale = await connection.query( get_sale_id, [id]);
                 if (sale.rows[0].id_payment_method != null) {
                     return res.status(400).json({
                         msg: "No puede interactuar con una venta que ya fue finalizada."
                     })
                 } else {
-                    const product2 = await connection.query('DELETE FROM details Where id_sale = $1 and id_product = $2', [id, id_product]);
+                    let delete_details = 'DELETE FROM details Where id_sale = $1 and id_product = $2'
+                    const product2 = await connection.query( delete_details, [id, id_product]);
                     res.status(200).json({
                         msg: `Se elimino el producto de la venta.`
                     })
@@ -112,13 +119,15 @@ salesFunctions.addProductToSale = async (req, res) => {
                 msg: "No se puede ingresar estos valores."
             })
         } else {
-            const Product1 = await connection.query("Select * from product WHERE product.id = $1", [id_product]);
+            let get_product_id = "Select * from product WHERE product.id = $1"
+            const Product1 = await connection.query( get_product_id, [id_product]);
             if (Product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El producto no existe"
                 })
             } else {
-                const sale = await connection.query("Select * from sale where id = $1", [id]);
+                let get_sale_id = "Select * from sale where id = $1"
+                const sale = await connection.query( get_sale_id, [id]);
                 if (sale.rows[0].id_payment_method != null) {
                     return res.status(400).json({
                         msg: "No puede interactuar con una venta que ya fue finalizada."
@@ -130,7 +139,8 @@ salesFunctions.addProductToSale = async (req, res) => {
                         })
                     } else {
                         const price = Product1.rows[0].value * amount
-                        const product = await connection.query("INSERT INTO details(id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)", [id, id_product, amount, price])
+                        let insert_product_details = "INSERT INTO details(id_sale,id_product,amount,price) VALUES($1,$2,$3,$4)"
+                        const product = await connection.query( insert_product_details, [id, id_product, amount, price])
                         res.status(200).json({
                             msg: `Se ingreso el producto con id: ${id_product}`
                         });
@@ -148,14 +158,17 @@ salesFunctions.addProductToSale = async (req, res) => {
 salesFunctions.confirmsale = async (req, res) => {
     try {
         const { id, id_payment_method } = req.body
-        const sale = await connection.query("UPDATE sale SET id_payment_method = $1 WHERE id = $2", [id_payment_method, id])
+        let update_sale = "UPDATE sale SET id_payment_method = $1 WHERE id = $2"
+        const sale = await connection.query( update_sale, [id_payment_method, id])
         try {
-            const details = await connection.query("Select sale.id as id_sale, details.id_product as id_product, details.amount as purchased_amount, product.amount as product_amount, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) Where sale.id = $1", [id]);
+            let get_details = "Select sale.id as id_sale, details.id_product as id_product, details.amount as purchased_amount, product.amount as product_amount, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) Where sale.id = $1"
+            const details = await connection.query( get_details, [id]);
             var price = 0
             for (var i = 0; i < details.rows.length; i++) {
                 var amount = details.rows[i].product_amount - details.rows[i].purchased_amount;
                 price = price + details.rows[i].price
-                var update = await connection.query("UPDATE product SET amount = $1 WHERE id = $2", [amount, details.rows[i].id_product])
+                let update_product = "UPDATE product SET amount = $1 WHERE id = $2"
+                var update = await connection.query( update_product, [amount, details.rows[i].id_product])
             }
             res.status(200).json({
                 id: id,
@@ -177,7 +190,8 @@ salesFunctions.confirmsale = async (req, res) => {
 salesFunctions.addSaleWantedCart = async (req, res) => {
     try {
         const { rut, id_salesman, id_sale } = req.body;
-        const user = await connection.query('select * from users where users.rut = $1', [rut])
+        let get_users_rut = 'select * from users where users.rut = $1'
+        const user = await connection.query( get_users_rut, [rut])
         if (user.rows.length === 0) {
             return res.status(200).json({
                 msg: "El usuario no existe"
@@ -188,13 +202,15 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
                 msg: "La lista de objetos deseados no esta confirmado"
             })
         } else {
-            const wantedcart1 = await connection.query('select wantedcart.id_product , product.id as idproduct, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount, product.value from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1', [rut]);
+            let get_wantedcart = 'select wantedcart.id_product , product.id as idproduct, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount, product.value from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) inner join users on (wantedcart.rut_user = users.rut) Where wantedcart.rut_user = $1'
+            const wantedcart1 = await connection.query( get_wantedcart, [rut]);
             if (wantedcart1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "No hay productos en tu lista de deseados"
                 })
             }
-            const wantedcart2 = await connection.query('select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1 and wantedcart.amount > product.amount', [rut])
+            let get_wantedcart1 = 'select wantedcart.id, wantedcart.id_product, product.name as name, product.id_subcategory as subcategory, subcategory.id_category as category, wantedcart.amount, product.url as url, product.value as price, product.amount as productamount from wantedcart inner join product on (wantedcart.id_product = product.id) inner join subcategory on (product.id_subcategory = subcategory.id) inner join category on (subcategory.id_category = category.id) Where wantedcart.rut_user = $1 and wantedcart.amount > product.amount'
+            const wantedcart2 = await connection.query( get_wantedcart1, [rut])
             if (wantedcart2.rows.length === 0) {
                 var price = 0;
                 for (var i = 0; i < wantedcart1.rows.length; i++) {
@@ -223,7 +239,8 @@ salesFunctions.addSaleWantedCart = async (req, res) => {
 
 salesFunctions.deleteRecordsOfTwoYears = async (req, res) => {
     try {
-        const sales = await connection.query("Select sale.id, sale.date from sale")
+        let get_sale = "Select sale.id, sale.date from sale"
+        const sales = await connection.query(get_sale)
         const date = functions.getCurrentDate()
         const division = date.split('-')
         const anno = division[0] - 2
@@ -237,8 +254,10 @@ salesFunctions.deleteRecordsOfTwoYears = async (req, res) => {
       })
       for(var i = 0;i < registros.length; i++){
         if(registros[i].date < dateTwoYearBefore){
-            var delete_records_details = await connection.query("Delete from details where id_sale = $1",[registros[i].id])
-            var delete_records_sale = await connection.query("Delete from sale where id = $1",[registros[i].id])
+            let delete_details = "Delete from details where id_sale = $1"
+            let delete_sale = "Delete from sale where id = $1"
+            var delete_records_details = await connection.query( delete_details,[registros[i].id])
+            var delete_records_sale = await connection.query( delete_sale,[registros[i].id])
         }
       }
       res.status(200).json({msg: "Se eliminaron los registros de hace 2 años"})

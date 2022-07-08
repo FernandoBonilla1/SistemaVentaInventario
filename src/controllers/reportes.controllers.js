@@ -20,7 +20,8 @@ reportFunctions.reporte_de_productos_devueltos = async (req, res) => {
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-        const return_products = await connection.query('select return.id, return.id_sale as sale, return.id_product as idproduct, product.name as name, return.description as description, return.amount as amount, return.price as price from return inner join product on (return.id_product = product.id)')
+        let get_return_products = 'select return.id, return.id_sale as sale, return.id_product as idproduct, product.name as name, return.description as description, return.amount as amount, return.price as price from return inner join product on (return.id_product = product.id)'
+        const return_products = await connection.query(get_return_products)
         const registros = return_products.rows.map((return_product) => {
             const registro = {
                 id: return_product.id,
@@ -98,8 +99,8 @@ reportFunctions.reporte_ventas_totales_por_precio = async (req, res) => {
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-
-        const sales = await connection.query('select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by total desc')
+        let get_sale = 'select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by total desc'
+        const sales = await connection.query(get_sale)
         const registros = sales.rows.map((sale) => {
             const registro = {
                 id: sale.id,
@@ -171,8 +172,8 @@ reportFunctions.reporte_ventas_totales_por_cantidad_vendida = async (req, res) =
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-
-        const sales = await connection.query('select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by details.amount desc')
+        let get_sale = 'select product.id, product.name, details.amount, sum(details.price) as total from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) where sale.id_payment_method IS NOT NULL Group by product.id, details.amount order by details.amount desc'
+        const sales = await connection.query(get_sale)
         const registros = sales.rows.map((sale) => {
             const registro = {
                 id: sale.id,
@@ -243,8 +244,8 @@ reportFunctions.reporte_productos_defectuosos = async (req, res) => {
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-
-        const defective_products = await connection.query('Select defective_product.id, sale.id as idventa, sale.date as fecha, product.id as idproducto, product.name as nombreproducto, defective_product.descripcion, defective_product.amount as amount from defective_product inner join sale on (sale.id = defective_product.id_sale) inner join product on (defective_product.id_product = product.id)')
+        let get_defective_product = 'Select defective_product.id, sale.id as idventa, sale.date as fecha, product.id as idproducto, product.name as nombreproducto, defective_product.descripcion, defective_product.amount as amount from defective_product inner join sale on (sale.id = defective_product.id_sale) inner join product on (defective_product.id_product = product.id)'
+        const defective_products = await connection.query(get_defective_product)
         const registros = defective_products.rows.map((defective_product) => {
             const registro = {
                 id: defective_product.id,
@@ -320,8 +321,8 @@ reportFunctions.boleta = async (req, res) => {
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-
-        const ventas = await connection.query('Select users.name as nombrevendedor, client.rut as rutcliente, client.name as nombrecliente, client.surname as apellidocliente, sale.id as id_sale, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) inner join users on (users.rut = sale.id_salesman) inner join users as client on (client.rut = sale.id_cliente) WHERE sale.id = $1', [id])
+        let get_sale = 'Select users.name as nombrevendedor, client.rut as rutcliente, client.name as nombrecliente, client.surname as apellidocliente, sale.id as id_sale, details.id_product as id_product, product.name as nombre, details.amount as amount, product.value as price_unit, details.price as price from sale inner join details on (sale.id = details.id_sale) inner join product on (details.id_product = product.id) inner join users on (users.rut = sale.id_salesman) inner join users as client on (client.rut = sale.id_cliente) WHERE sale.id = $1'
+        const ventas = await connection.query( get_sale, [id])
         const nombre_vendedor = ventas.rows[0].nombrevendedor
         const rut_cliente = ventas.rows[0].rutcliente
         const nombre_cliente = ventas.rows[0].nombrecliente
@@ -417,8 +418,8 @@ reportFunctions.reporteExistecia = async (req, res) => {
         });
         doc.on('data', (data) => { stream.write(data) });
         doc.on('end', () => { stream.end() });
-
-        const products = await connection.query('SELECT product.id, product.name, product.brand, product.description, product.amount, product.value, subcategory.name as subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)')
+        let get_product = 'SELECT product.id, product.name, product.brand, product.description, product.amount, product.value, subcategory.name as subcategory FROM product inner join subcategory on (subcategory.id = product.id_subcategory) inner join category on (category.id = subcategory.id_category)'
+        const products = await connection.query(get_product)
         const registros = products.rows.map((product) => {
             const registro = {
                 id: product.id,

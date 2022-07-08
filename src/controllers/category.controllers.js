@@ -4,7 +4,8 @@ const categoryFunctions = {}
 
 categoryFunctions.getCategory = async (req, res) => {
     try {
-        const category = await connection.query('SELECT * FROM category');
+        let get_category = 'SELECT * FROM category'
+        const category = await connection.query(get_category);
         if (category.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay categorias"
@@ -28,7 +29,8 @@ categoryFunctions.createCategory = async (req, res) => {
                 msg: "La categoria debe incluir nombre."
             });
         } else {
-            const category = await connection.query('INSERT INTO category(name,description,removed) VALUES($1,$2,$3)', [name, description, removed])
+            let insert_category = 'INSERT INTO category(name,description,removed) VALUES($1,$2,$3)'
+            const category = await connection.query( insert_category, [name, description, removed])
             res.status(200).json({
                 msg: `Se logro crear la categoria con nombre: ${name}`
             });
@@ -45,7 +47,8 @@ categoryFunctions.searchcategory = async (req, res) => {
     try {
         const { name } = req.body;
         nameCapitalize = name.toUpperCase()
-        const categories = await connection.query(`SELECT * FROM category where name LIKE '${nameCapitalize}%'`);
+        let search_category = `SELECT * FROM category where name LIKE '${nameCapitalize}%'`
+        const categories = await connection.query( search_category);
         if (categories.rows.length === 0) {
             return res.status(200).json({
                 msg: "No hay categorias"
@@ -68,13 +71,15 @@ categoryFunctions.modifycategory = async (req, res) => {
                 msg: "Debe rellenar los campos."
             });
         } else {
-            const categories = await connection.query("Select * from category where id = $1", [id])
+            let get_category = "Select * from category where id = $1"
+            const categories = await connection.query( get_category, [id])
             if (categories.rows.length === 0) {
                 return res.status(200).json({
                     msg: "La categoria no existe"
                 });
             } else {
-                const categories1 = await connection.query('UPDATE category SET name = $1, description = $2 WHERE id = $3', [name, description, id])
+                let update_category = 'UPDATE category SET name = $1, description = $2 WHERE id = $3'
+                const categories1 = await connection.query( update_category, [name, description, id])
                 res.status(200).json({
                     msg: `Se ha actualizo la categoria`
                 });
@@ -96,20 +101,24 @@ categoryFunctions.changeStatusCategory = async (req, res) => {
                 msg: "Debe especificar el id de la categoria para removerlo"
             })
         } else {
-            const categories = await connection.query("Select * from category where id = $1", [id]);
+            let get_category = "Select * from category where id = $1"
+            const categories = await connection.query( get_category, [id]);
             if (categories.rows.length === 0) {
                 return res.status(200).json({
                     msg: "La categoria no existe"
                 });
             } else {
-                const categories1 = await connection.query('UPDATE category SET removed = $1 WHERE id = $2', [removed, id])
+                let update_category = 'UPDATE category SET removed = $1 WHERE id = $2'
+                const categories1 = await connection.query( update_category, [removed, id])
                 if(removed){
-                    const subcategorys = await connection.query("UPDATE subcategory SET removed = $1 where id_category = $2",[removed, id])
+                    let update_subcategory = "UPDATE subcategory SET removed = $1 where id_category = $2"
+                    const subcategorys = await connection.query( update_subcategory,[removed, id])
                     return res.status(200).json({
                         msg: `Se actualizo el estado de la categoria con id: ${id}`
                     });
                 }else{
-                    const subcategorys = await connection.query("UPDATE subcategory SET removed = $1 where id_category = $2",[removed, id])
+                    let update_subcategory = "UPDATE subcategory SET removed = $1 where id_category = $2"
+                    const subcategorys = await connection.query( update_subcategory,[removed, id])
                     return res.status(200).json({
                         msg: `Se actualizo el estado de la categoria con id: ${id}`
                     });

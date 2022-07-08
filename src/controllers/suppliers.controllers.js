@@ -4,7 +4,8 @@ const supplierFunctions = {}
 
 supplierFunctions.getSuppliers = async (req, res) => {
     try {
-        const suppliers = await connection.query('SELECT * FROM supplier');
+        let get_supplier = 'SELECT * FROM supplier'
+        const suppliers = await connection.query(get_supplier);
         res.json(suppliers.rows);
     } catch (error) {
         res.status(500).json({
@@ -24,9 +25,11 @@ supplierFunctions.createSupplier = async (req, res) => {
                 msg: `Debe completar los campos necesarios`
             });
         } else {
-            const verify = await connection.query("Select * from supplier where email = $1", [email])
+            let get_supplier_email = "Select * from supplier where email = $1"
+            const verify = await connection.query( get_supplier_email, [email])
             if (verify.rows.length === 0) {
-                const supplier = await connection.query('INSERT INTO supplier(name,description,phone,address,email,removed) VALUES($1,$2,$3,$4,$5,$6)', [name, description, phone, address, email, removed])
+                let insert_supplier = 'INSERT INTO supplier(name,description,phone,address,email,removed) VALUES($1,$2,$3,$4,$5,$6)'
+                const supplier = await connection.query( insert_supplier, [name, description, phone, address, email, removed])
                 res.status(200).json({
                     msg: `Se logro crear el proveedor: ${name}`
                 });
@@ -53,7 +56,8 @@ supplierFunctions.searchSupplier = async (req, res) => {
             });
         } else {
             nameCapitalize = functions.capitalizarPrimeraLetra(name)
-            const suppliers = await connection.query(`SELECT * FROM supplier where name LIKE '${nameCapitalize}%'`);
+            let search_supplier = `SELECT * FROM supplier where name LIKE '${nameCapitalize}%'`
+            const suppliers = await connection.query(search_supplier);
             if (suppliers.rows.length === 0) {
                 return res.status(401).json({
                     msg: "No hay proveedores"
@@ -78,13 +82,15 @@ supplierFunctions.deleteSupplier = async (req, res) => {
                 msg: "Debe especificar el id del proveedor"
             })
         } else {
-            const product1 = await connection.query("Select * from supplier where id = $1", [id])
+            let get_supplier = "Select * from supplier where id = $1"
+            const product1 = await connection.query( get_supplier, [id])
             if (product1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "No existe el proveedor"
                 });
             } else {
-                const product2 = await connection.query('DELETE FROM supplier WHERE id = $1', [id]);
+                let delete_supplier = 'DELETE FROM supplier WHERE id = $1'
+                const product2 = await connection.query( delete_supplier, [id]);
                 res.status(200).json({
                     msg: `Se elimino el proveedor con id: ${id}`
                 })
@@ -106,13 +112,15 @@ supplierFunctions.modifysupplier = async (req, res) => {
                 msg: "Debe rellenar los campos."
             });
         } else {
-            const supplier1 = await connection.query("Select * from supplier where id = $1", [id])
+            let get_supplier = "Select * from supplier where id = $1"
+            const supplier1 = await connection.query( get_supplier, [id])
             if (supplier1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El proveedor no existe"
                 });
             } else {
-                const supplier2 = await connection.query('UPDATE supplier SET name = $1, description = $2, phone = $3, address = $4, email = $5 WHERE id = $6', [name, description, phone, address, email,id])
+                let update_supplier = 'UPDATE supplier SET name = $1, description = $2, phone = $3, address = $4, email = $5 WHERE id = $6' 
+                const supplier2 = await connection.query( update_supplier, [name, description, phone, address, email,id])
                 res.status(200).json({
                     msg: `Se ha actualizo el proveedor`
                 });
@@ -135,13 +143,15 @@ supplierFunctions.changeStatusSupplier = async (req, res) => {
                 msg: "Debe especificar el id del proveedor para removerlo"
             })
         } else {
-            const supplier = await connection.query("Select * from supplier where id = $1",[id]);
+            let get_supplier_id = "Select * from supplier where id = $1"
+            const supplier = await connection.query( get_supplier_id,[id]);
             if(supplier.rows.length === 0){
                 return res.status(200).json({
                     msg: "El proveedor no existe"
                 });
             } else {
-                const supplier1 = await connection.query('UPDATE supplier SET removed = $1 WHERE id = $2', [removed, id])
+                let update_supplier = 'UPDATE supplier SET removed = $1 WHERE id = $2'
+                const supplier1 = await connection.query( update_supplier, [removed, id])
                 res.status(200).json({
                     msg: `Se actualizo el estado del proveedor con id: ${id}`
                 });

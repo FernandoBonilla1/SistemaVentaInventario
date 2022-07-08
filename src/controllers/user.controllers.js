@@ -5,7 +5,8 @@ const userFunction = {};
 
 userFunction.getUsers = async (req, res) => {
     try {
-        const users = await connection.query('SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city, users.banned, users.role, users.confirmcart from users');
+        let get_users = 'SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city, users.banned, users.role, users.confirmcart from users'
+        const users = await connection.query(get_users);
         if (users.rows.length === 0) {
             return res.status(400).json({
                 msg: "No hay usuarios"
@@ -24,13 +25,15 @@ userFunction.getUsers = async (req, res) => {
 userFunction.updateUser = async (req, res) => {
     try {
         const { rut, banned } = req.body;
-        const users1 = await connection.query("Select * from users where rut = $1", [rut]);
+        let get_user_rut = "Select * from users where rut = $1"
+        const users1 = await connection.query(get_user_rut, [rut]);
         if (users1.rows.length === 0) {
             return res.status(400).json({
                 msg: "El usuario no existe"
             })
         } else {
-            const users2 = await connection.query('UPDATE users SET banned = $1 WHERE rut = $2', [banned, rut]);
+            let update_state_user = 'UPDATE users SET banned = $1 WHERE rut = $2'
+            const users2 = await connection.query(update_state_user, [banned, rut]);
             res.status(200).json({
                 msg: `Se modifico el estado del usuario: ${rut}`
             })
@@ -45,7 +48,8 @@ userFunction.updateUser = async (req, res) => {
 userFunction.searchUser = async (req, res) => {
     try {
         const { rut } = req.body;
-        const users = await connection.query(`SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city, users.banned, users.role, users.confirmcart from users WHERE rut = $1 `, [rut]);
+        let get_user_rut = `SELECT users.rut, users.name, users.surname, users.email, users.address, users.phone, users.city, users.banned, users.role, users.confirmcart from users WHERE rut = $1 `
+        const users = await connection.query(get_user_rut, [rut]);
         if (users.rows.length === 0) {
             return res.status(200).json({
                 msg: "El rut no coincide."
@@ -68,13 +72,15 @@ userFunction.modifyUser = async (req, res) => {
                 msg: "Debe rellenar los campos."
             });
         } else {
-            const users1 = await connection.query("Select * from users where rut = $1", [rut]);
+            let get_user_rut = "Select * from users where rut = $1"
+            const users1 = await connection.query(get_user_rut, [rut]);
             if (users1.rows.length === 0) {
                 return res.status(200).json({
                     msg: "El usuario no existe"
                 });
             } else {
-                const users2 = await connection.query("UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6 WHERE rut = $7", [name, surname, email, address, phone, city, rut]);
+                let update_user = "UPDATE users SET name = $1, surname = $2, email = $3, address = $4, phone = $5, city = $6 WHERE rut = $7"
+                const users2 = await connection.query( update_user, [name, surname, email, address, phone, city, rut]);
                 res.status(200).json({
                     msg: `Se ha actualizo el usuario`
                 });
@@ -91,13 +97,15 @@ userFunction.modifyUser = async (req, res) => {
 userFunction.modifyRole = async(req, res) => {
     try{
         const {rut, role} = req.body
-        const users1 = await connection.query("Select * from users where rut = $1", [rut]);
+        let get_user = "Select * from users where rut = $1"
+        const users1 = await connection.query(get_user, [rut]);
         if (users1.rows.length === 0) {
             return res.status(400).json({
                 msg: "El usuario no existe"
             })
         } else {
-            const users2 = await connection.query('UPDATE users SET role = $1 WHERE rut = $2', [role, rut]);
+            let update_role_user = 'UPDATE users SET role = $1 WHERE rut = $2'
+            const users2 = await connection.query( update_role_user, [role, rut]);
             res.status(200).json({
                 msg: `Se modifico el rol del usuario con rut: ${rut}`
             })

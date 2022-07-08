@@ -11,7 +11,8 @@ uploadImageFunction.uploadImageProduct = async (req, res) => {
                 msg: "Debe enviar el string en base 64"
             })
         } else {
-            const product = await connection.query("select * from product where id = $1",[id_product]);
+            let get_product_id = "select * from product where id = $1"
+            const product = await connection.query( get_product_id,[id_product]);
             if(product.rows.length === 0){
                 return res.status(400).json({
                     msg: "El producto no existe"
@@ -19,7 +20,8 @@ uploadImageFunction.uploadImageProduct = async (req, res) => {
             } else {
                 fs.writeFileSync(`src/upload/category/category${id_product}.png`, base64Data.replace("data:image/png;base64,", ""), 'base64');
                 try{
-                    var product1 = await connection.query("UPDATE product set url = $1 where id = $2", [base64Data, id_product])
+                    let update_url_product = "UPDATE product set url = $1 where id = $2"
+                    var product1 = await connection.query( update_url_product, [base64Data, id_product])
                     res.status(200).json({
                         msg: "Se subio la imagen"
                     })
@@ -47,7 +49,8 @@ uploadImageFunction.uploadImageCategory = async (req, res) => {
                 msg: "Debe enviar el string en base 64"
             })
         } else {
-            const category = await connection.query("select * from category where id = $1",[id_category]);
+            let get_category_id = "select * from category where id = $1"
+            const category = await connection.query( get_category_id,[id_category]);
             if(category.rows.length === 0){
                 return res.status(400).json({
                     msg: "La categoria no existe"
@@ -55,7 +58,8 @@ uploadImageFunction.uploadImageCategory = async (req, res) => {
             } else {
                 fs.writeFileSync(`src/upload/category/category${id_category}.png`, base64Data.replace("data:image/png;base64,", ""), 'base64');
                 try{
-                    var category1 = await connection.query("UPDATE category set url = $1 where id = $2", [base64Data, id_category])
+                    let update_url_category = "UPDATE category set url = $1 where id = $2"
+                    var category1 = await connection.query( update_url_category, [base64Data, id_category])
                     res.status(200).json({
                         msg: "Se subio la imagen"
                     })
@@ -78,7 +82,8 @@ uploadImageFunction.uploadImageCategory = async (req, res) => {
 uploadImageFunction.getImageProductBase64 = async (req, res) => {
     try {
         const { id_product } = req.body;
-        const product = await connection.query("Select * from product where id = $1", [id_product])
+        let get_product_id = "Select * from product where id = $1"
+        const product = await connection.query( get_product_id, [id_product])
         if (product.rows.length === 0) {
             return res.status(400).json({
                 msg: "No existe el producto"
@@ -101,12 +106,14 @@ uploadImageFunction.getImageProductBase64 = async (req, res) => {
 
 uploadImageFunction.changeurlProduct = async (req, res) => {
     try {
-        const product = await connection.query("select * from product")
+        let get_product = "select * from product"
+        const product = await connection.query(get_product)
         for (var i = 0; i < product.rows.length; i++) {
             let path = `src/upload/products/product${product.rows[i].id}.png`
             const data = fs.readFileSync(path);
             const image = "data:image/png;base64," + data.toString('base64');
-            var product1 = await connection.query("UPDATE product set url = $1 where id = $2", [image, product.rows[i].id])
+            let update_url = "UPDATE product set url = $1 where id = $2"
+            var product1 = await connection.query( update_url, [image, product.rows[i].id])
         }
         res.status(200).json({
             msg: "Se actualizaron la url"
@@ -121,12 +128,14 @@ uploadImageFunction.changeurlProduct = async (req, res) => {
 
 uploadImageFunction.changeurlCategory = async (req, res) => {
     try {
-        const category = await connection.query("select * from category")
+        let get_category = "select * from category"
+        const category = await connection.query(get_category)
         for (var i = 0; i < category.rows.length; i++) {
             let path = `src/upload/category/category${category.rows[i].id}.png`
             const data = fs.readFileSync(path);
             const image = "data:image/png;base64," + data.toString('base64');
-            var category1 = await connection.query("UPDATE category set url = $1 where id = $2", [image, category.rows[i].id])
+            let update_url = "UPDATE category set url = $1 where id = $2"
+            var category1 = await connection.query( update_url, [image, category.rows[i].id])
         }
         res.status(200).json({
             msg: "Se actualizaron la url"
